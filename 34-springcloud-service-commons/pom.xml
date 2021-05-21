@@ -20,4 +20,37 @@
         <relativePath>../34-springcloud-service-parent/pom.xml</relativePath>
     </parent>
 
+    <dependencies>
+
+        <!--spring-cloud-starter-netflix-eureka-client
+        eureka-client 客户端
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        由于是在commons项目当中进行操作的，所以eureka client并不需要用到。只需要使用到openfeign
+
+        spring-cloud-starter-openfeign
+        此处 spring-cloud-starter-openfeign 并没有写version版本号
+        因为在parent标签当中，父依赖、父项目当中有一段 dependencyManagement - dependencies 中规定了spring cloud的总版本号，即如下所示
+        <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.SR3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        这个就相当于定义了Spring Cloud当中的G版本当中里面所有组件的依赖（组件的版本号），都被定义好了打包好的。
+        所以当前commons项目直接继承parent父项目父依赖即可。继承父依赖父项目之后，所以spring-cloud-starter-openfeign是不需要进行写版本号的，
+        因为spring-cloud-starter-feign就是spring cloud当中的一个组件，总版本号定义好了，那么其中里面的组件的版本号也是被固定好的，就是已经依赖好了的。
+        加入了依赖之后，service下的GoodsRemoteClient接口中@RequestMapping就没有报错了
+
+        spring-cloud-starter-openfeign这个依赖下其实都有spring mvc的一些注解都有。
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

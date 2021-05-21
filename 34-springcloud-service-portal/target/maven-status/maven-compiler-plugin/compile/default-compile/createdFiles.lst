@@ -1,3 +1,4 @@
 com\bjpowernode\springcloud\config\RestConfig.class
 com\bjpowernode\springcloud\controller\GoodsController.class
 com\bjpowernode\springcloud\PortalApplication.class
+com\bjpowernode\springcloud\config\MyRule.class

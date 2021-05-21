@@ -27,12 +27,13 @@ public class GoodsController {
 
     /**
      * 查询所有商品
-     * @param model
+//     * @param model
      * @return
      */
     @RequestMapping("/service/goods")
 //    public String goods(Model model){
-        public ResultObject goods(Model model){
+//        public ResultObject goods(Model model){
+    public ResultObject goods(){ //当前由于Model model 没有使用到该参数，所以进行删除，以及GoodsController是GoodsRemoteClient接口的实现，为了保持统一，所以进行删除
         //为了在调用服务提供者的服务的时候区分9100的goods服务和9200的goods服务，在这里打印信息以作区分。用以区分负载均衡到底是调用的哪一台服务提供者的服务，是9100还是9200
         System.out.println("9200 被执行...............................");
 

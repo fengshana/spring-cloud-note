@@ -1,3 +1,4 @@
+com\bjpowernode\springcloud\model\ResultObject.class
 com\bjpowernode\springcloud\constants\Constant.class
 com\bjpowernode\springcloud\model\Goods.class
-com\bjpowernode\springcloud\model\ResultObject.class
+com\bjpowernode\springcloud\service\GoodsRemoteClient.class

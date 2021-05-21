@@ -81,10 +81,12 @@ public class RestConfig {
     @Bean
     public IRule iRule(){
         //采用轮询方式进行负载均衡，即通过重新定义一个Bean的方式，当中返回的负载均衡实现方式不再是ZoneAwareLoadBalancer该实现方式了，而是RoundRobinRule轮询的方式进行实现负载均衡
-        return new RoundRobinRule();
+         return new MyRule();//此处采用自定义的负载均衡策略，参考了RandomRule的实现
+
+//        return new RoundRobinRule();
 //        return new ClientConfigEnabledRoundRobinRule();
 //        ...
-        
+
         /*
         这就是负载均衡切换的实现方式，即定义重新定义IRule Bean
         public abstract class AbstractLoadBalancerRule implements IRule, IClientConfigAware { 抽象类无法new 不能返回该种负载均衡实现方式

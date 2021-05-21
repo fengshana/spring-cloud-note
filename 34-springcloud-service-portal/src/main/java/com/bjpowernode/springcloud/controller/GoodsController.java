@@ -1,6 +1,7 @@
 package com.bjpowernode.springcloud.controller;
 
 import com.bjpowernode.springcloud.model.ResultObject;
+import com.bjpowernode.springcloud.service.GoodsRemoteClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -13,16 +14,34 @@ import org.springframework.web.client.RestTemplate;
 public class GoodsController {
 
 
+    /*
+    feign:
+    在第一次调用的时候，通过知道地址GOODS_SERVICE_URL的方式进行restTemplate直连，直接连接远程服务。
+    private static final String GOODS_SERVICE_URL = "http://localhost:9100/service/goods";//产品服务的接口地址
+    上述通过直连
+
+    //后续，该种方式是通过注册中心的方式发现服务（服务名称）
+    private static final String GOODS_SERVICE_URL_02 = "http://34-SPRINGCLOUD-SERVICE-GOODS/service/goods";//产品服务的接口地址
+
+    下面通过第三种方式，即直接声明一下接口GoodsRemoteClient，将该接口注入进来。即
+    @Autowired
+    private GoodsRemoteClient goodsRemoteClient;
+
+    * */
+
+
     //SpringCloud注册中心 Eureka的服务发现
     //首先将该portal 消费者项目进行停掉
 
 
     //后续会慢慢变标准；写死产品服务的URL，产品服务的URL即为 http://127.0.0.1:9100/service/goods 或者 http://localhost:9100/service/goods
+    //(直连)
     private static final String GOODS_SERVICE_URL = "http://localhost:9100/service/goods";//产品服务的接口地址
 
     //该ip+端口就不再需要写死而是写服务提供者提供注册在注册中心的服务名称，
     //即将localhost:9100替换成34-SPRINGCLOUD-SERVICE-GOODS 注意是大写字母
     //然后通过该地址，服务消费者再去调用服务提供者的接口即下面的goods()方法当中将restTemplate.getForEntity()中的url GOODS_SERVICE_URL换成 GOODS_SERVICE_URL_02
+    //注册中心服务名去进行调用
     private static final String GOODS_SERVICE_URL_02 = "http://34-SPRINGCLOUD-SERVICE-GOODS/service/goods";//产品服务的接口地址
 
     //当前为消费者，即Controller调用Controller
@@ -30,6 +49,9 @@ public class GoodsController {
     //goods当中的controller为服务提供方，当前controller为消费方，消费方需要调用服务方的controller
     //即当前controller不再调用service去获取得到数据，当前也没有service
 
+    //feign的远程调用客户端，也就是不再需要 restTemplate进行调用了，直接使用goodsRemoteClient即可
+    @Autowired
+    private GoodsRemoteClient goodsRemoteClient;//此时goodsRemoteClient就是一个服务了，通过该服务进行调用
 
     /**
      * 此类可以进行HTTP接口的调用，除此之外还有httpClient 这种apache下的项目也可以进行http接口调用
@@ -64,12 +86,13 @@ public class GoodsController {
 
     /**
      * 查询所有商品
-     * @param model
+//     * @param model
      * @return
      */
     @RequestMapping("/cloud/goods")
 //    public String goods(Model model){
-        public ResultObject goods(Model model){
+//    public ResultObject goods(Model model){
+        public ResultObject goods(){ //此处的Model model 没有任何作用进行删除
         /*
         controller调用controller 最原始的办法怎么做呢？就是使用Spring当中的Template，一个模板类去进行调用的
         即portal当中的controller调用goods当中的controller
@@ -114,6 +137,41 @@ public class GoodsController {
         //该调用过程是一个restful 风格调用，controller调用controller, 返回的数据为JSON
         //拿到响应的数据之后将项目跑起来，调通项目
         //通过restTemplate是可以进行http接口间的调用的，不管是不是在springcloud项目当中，在其他项目当中也是可以使用restTemplate的
+    }
+
+
+
+    //============================================================================================================
+
+
+    /**
+     * 查询所有商品
+//     * @param model
+     * @return
+     */
+    @RequestMapping("/cloud/goodsFeign")
+//    public String goods(Model model){
+//    public ResultObject goods(Model model){
+    public ResultObject goodsFeign(){ //此处的Model model没有作用进行删除
+        /*调用远程的一个controller，RESTful调用，此处是通过feign 这种声明式的远程调用，feign只需要声明一个接口即可，然后就可以通过这个接口去调用远程服务提供者提供的服务了。那么开发的时候就非常类似dubbo的接口层一样
+        goodsRemoteClient就类似于dubbo里面的接口层一样，dubbo里面的接口一样，那么这样就可以实现调用了。
+        此时就可以进行测试了，关闭一下消费者portal服务，服务提供者先不进行关闭，重新启动一下消费者portal Application即可
+        当前进行走前端portal项目服务当中的/cloud/goodsFeign接口，即访问 http://localhost:8080/cloud/goodsFeign，通过feign进行调用，它才是通过feign调用
+        而上面的 /cloud/goods是通过 ribbon+RestTemplate进行调用的远程服务，此时通过 /cloud/goodsFeign进行访问,即http://localhost:8080/cloud/goodsFeign
+        相应内容如下：{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}
+        看到goods9100和goods9200的控制台，可以看到是9100的服务被调用了，再次刷新地址/cloud/goodsFeign尝试访问服务发现调用的是9200，也就是9100和9200所提供的的服务都有被调用到。
+        在通过feign进行调用的过程当中是存在有负载均衡调用的算法的。
+        即feign当中也自带有负载均衡，因为feign底层进行包装了ribbon，feign将ribbon进行了二次封装。所以在使用声明式调用的时候就已经当中存在有负载均衡了。
+        两台goods9100和goods9200服务都有被调用，说明存在有负载均衡。那么这样开发就变得方便了。不再需要使用ribbon和RestTemplate来进行调用远程服务了。
+        而是直接使用feign这种声明式调用即可。以上测试通过spring cloud feign实现声明式远程调用就测试完成了。
+        */
+        return goodsRemoteClient.goods();//通过goodsRemoteClient直接调用goods方法即可
+        /*
+        * goodsRemoteClient调用goods方法，那么就会走到commons当中的GoodsRemoteClient接口层当中去，而GoodsRemoteClient当中的goods()方法返回ResultObject与当前该消费者需要返回的内容ResultObject类型一致即可
+        * 而GoodsRemoteClient接口当中的goods()方法实现，通过该方法上的@RequestMapping("/service/goods")注解，这个实现是在远程服务提供者即goods9100或者是goods9200当中的controller中实现的
+        * GoodsRemoteClient接口中的方法由远程提供服务者进行实现
+        * 而在portal服务当中，我们只需要调用goodsRemoteClient.goods()接口
+        * */
     }
 
 }

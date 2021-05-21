@@ -3,7 +3,31 @@ package com.bjpowernode.springcloud;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
+/*
+* 添加注解@EnableFeignClients，该portal服务没有依赖openfeign相关的依赖，但是为什么这个类导入的时候存在，
+* 原因在于当前portal服务的pom.xml当中并没有添加openfeign的jar包，
+* 但是当前portal项目的pom.xml中进行依赖了commons项目，commons项目当中进行依赖了这个jar包也就是spring-cloud-starter-openfeign，
+* 从而当前项目portal服务也可以拿到openfeign的相关注解相关类相关内容，所以此时可以进行导入@EnableFeignClients该注解
+* 因为当前portal项目当中进行依赖了commons项目即portal服务的pom.xml如下
+* <!--消费者的controller也需要需要公共项目 commons的Constants等、model等-->
+        <!--依赖commons的常量类 model类
+        依赖统一的springcloud-service-commons项目
+        然后进行import Changes
+        -->
+        <dependency>
+            <groupId>com.bjpowernode.springcloud</groupId>
+            <artifactId>34-springcloud-service-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        因为当前portal项目依赖了commons项目，而commons项目依赖了spring-cloud-starter-openfeign的jar包
+        所以当前在portal项目当中也可以拿到openfeign的相关jar包相关内容
+        添加@EnableFeignClients开启一下feign的客户端调用支持，它的一个客户端调用，远程调用的支持进行开启
+
+        完成上述操作之后，然后接着就在portal服务当中的controller中进行调用服务，此时去往portal服务的controller具体调用
+* */
+@EnableFeignClients
 @EnableEurekaClient //第三个步骤，添加@EnableEurekaClient注解，该注解的作用在于 激活 Eureka中的EnableEurekaClient功能，
 @SpringBootApplication
 public class PortalApplication {
