@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 继承springboot父项目-->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.9.RELEASE</version>
+        <relativePath/><!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.bjpowernode.springcloud</groupId>
+    <artifactId>34-springcloud-service-parent</artifactId>
+    <version>1.0.0</version>
+
+    <!--打包方式：在父项目当中需要指定pom，接着import Changes-->
+    <packaging>pom</packaging>
+
+    <!--parent父项目聚合各个子项目，使得成为一个聚合项目，方便eureka server进行打包部署不报错，接着import Changes-->
+    <modules>
+        <module>../34-springcloud-service-commons</module>
+        <module>../34-springcloud-service-eureka</module>
+        <!--<module>../34-springcloud-service-goods</module>-->
+        <!--此处goods更换服务名称了为goods9100了所以此处也需要进行修改-->
+        <module>../34-springcloud-service-goods-9100</module>
+        <module>../34-springcloud-service-portal</module>
+
+        <!--服务提供者的集群服务，即存在第二个服务提供者goods，只不过端口不一样-->
+        <module>../34-springcloud-service-goods-9200</module>
+    </modules>
+
+
+    <!--依赖管理 -->
+    <dependencyManagement>
+        <dependencies>
+            <!--现在spring cloud使用的是G版本即Greenwich SR3，所以需要将此处的Finchley.RELEASE H版本换成G版本Greenwich SR3版本的依赖，此处可以去maven仓库粘贴过来-->
+            <!--<dependency>
+                  <groupId>org.springframework.cloud</groupId>
+                  <artifactId>spring-cloud-dependencies</artifactId>
+                 <version>Finchley.RELEASE</version>
+                  <type>pom</type>
+                  <scope>import</scope>
+              </dependency>-->
+
+            <!--
+        步骤：
+        1. 浏览器打开网址：https://mvnrepository.com/
+        2. 在最上方的文本框中输入spring-cloud-dependencies
+        3. 点击Search按钮进行检索
+        4. 在查询出来的列表中，点击最上方一条Spring Cloud Dependencies超链接
+        5. 在跳转到的页面中进行查找Greenwich.SR3该版本链接并点击
+        6. 进行复制spring-cloud-dependencies依赖
+        <!- - https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies - ->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>Greenwich.SR3</version>
+        <type>pom</type>
+        <scope>runtime</scope>
+    </dependency>
+
+        7. 将内容复制进来之后再将<scope>runtime</scope>标签中的内容修改为import，即<scope>runtime</scope>
+        即
+    <!- - https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies - ->
+    <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>Greenwich.SR3</version>
+        <type>pom</type>
+        <scope>import</scope>
+    </dependency>
+        8. 最后将F版的spring-cloud-dependencies依赖进行删除
+    -->
+            <!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-dependencies -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.SR3</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+</project>

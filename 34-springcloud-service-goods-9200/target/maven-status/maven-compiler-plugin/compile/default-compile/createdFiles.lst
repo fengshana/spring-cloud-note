@@ -1,0 +1,5 @@
+com\bjpowernode\springcloud\GoodsApplication9200.class
+com\bjpowernode\springcloud\mapper\GoodsMapper.class
+com\bjpowernode\springcloud\service\GoodsService.class
+com\bjpowernode\springcloud\service\impl\GoodsServiceImpl.class
+com\bjpowernode\springcloud\controller\GoodsController.class

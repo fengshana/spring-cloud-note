@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+    该当前项目依然是SpringBoot项目，和之前一样
+    1. 首先继承父依赖 parent,有一个统一的父依赖 继承统一的父依赖，从goods服务中的pom.xml中粘贴过来或者 portal中的pom.xml粘贴过来即可
+    -->
+    <!-- 统一继承的父项目 -->
+    <parent>
+        <groupId>com.bjpowernode.springcloud</groupId>
+        <artifactId>34-springcloud-service-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../34-springcloud-service-parent/pom.xml</relativePath>
+    </parent>
+
+
+    <groupId>com.bjpowernode.springcloud</groupId>
+    <artifactId>34-springcloud-service-eureka</artifactId>
+    <version>1.0.0</version>
+
+
+    <!--
+        然后将 name、description、properties等标签粘贴过来
+        该name结点当中的内容如果不对，将会导致idea左侧的maven栏当中出现的该pom.xml 该子服务名称不对。
+    -->
+    <name>34-springcloud-service-eureka</name>
+    <description>34-springcloud-service-eureka project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+
+    <!--web起步依赖 粘贴过来-->
+    <dependencies>
+        <!-- spring web 起步依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+
+        <!--Spring Cloud 的 eureka-server 起步依赖
+        spring cloud 基于 spring boot 自动配置原理 做了一个starter
+        理解了starter之后就会明白，它其实是netflix公司的相关jar包导入进来，
+        然后将一些该配置的bean给你都配置好了，然后你就可以直接拿来使用了
+        所以做了一个启动器，有了启动器之后开发就比较方便了
+        就不再需要自己去进行整合Eureka的相关内容
+        相当于 spring-cloud-starter-netflix-eureka-server 已经将要准备的东西都准备好了
+        可以直接使用，这就是spring boot 起步器 起步原理
+        添加好依赖之后，在该Eureka server该项目的main方法上添加@EnableEurekaServer的注解即可
+        这样 Eureka注册中心就准备好了
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
+        </dependency>
+    </dependencies>
+
+    <!--
+        通过注册中心 Eureka可以解决项目中的什么样的实际问题呢？
+        通过注册中心解决实际问题即
+        第一个：多个服务的接口地址是通过注册中心去进行获取的，不用我们自己在项目当中去进行定义那些接口地址了
+        第二个：通过注册中心，到时候我们调用服务的时候可以实现负载均衡
+        第三个：通过注册中心，我们到时候可以实现这个故障转移，有一个服务不能够调用了，可以使用故障转移，转而调用按个正产服务正在工作的那个服务
+        然后通过注册中心你可以发现哪些服务宕机了哪些服务没有宕机
+        带来这些价值
+        随着逐步深入，后续会有更加深入的理解，认识会越来越深，印象逐步加深
+
+        注册中心也是一个web项目，所以也需要进行添加 web 的起步依赖
+        因为注册中心到时候也是在 浏览器可以进行访问的一个工程 注册中心叫做Eureka
+
+        当前需要将 注册中心 Eureka的相关东西拿进来
+        那么这个时候需要进行添加Eureka的依赖
+
+        1. 创建一个SpringBoot项目，并且添加SpringBoot相关依赖
+        2. 添加 Eureka的相关依赖
+
+    -->
+
+    <!--
+    在创建springboot项目的时候，会自动添加上这个插件，通过这个插件打出来的包是可执行的
+    在parent中写完modules结点之后，将4个子服务项目进行聚合
+    然后在4个子服务项目的pom.xml中在parent结点中添加relativePath parent父依赖的pom.xml的相对路径之后
+    通过maven的lifecycle的package打包不正常
+    此时需要添加springboot的打包插件进行打包
+    使用springboot专门用于打包的插件，打包编译插件
+    -->
+    <build>
+        <plugins>
+            <!--SpringBoot提供的编译、打包的Maven插件-->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <!-- TODO  如果是打一个jar运行的话，jar包里面有JSP页面，那么要采用1.4.2.RELEASE 版本来打包，否则JSP无法访问-->
+                <!--此时该项目当中没有JSP页面自然也就不需要填写这个版本号了，import Changes
+                然后再通过idea左侧的maven-lifecycle-package再次对eureka-server进行打包操作
+                -->
+                <!--<version>1.4.2.RELEASE</version>-->
+            </plugin>
+        </plugins>
+    </build>
+
+
+
+</project>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <!--
+   portal 壮观的大门; 豪华的入口; 门户网站; 入口站点;
+   前台
+   该项目为消费者，开始调用服务方的接口
+  消费者和服务提供者差不多，消费者服务项目也是一个 SpringBoot项目
+  但是刚刚由于SpringBoot由于网络原因，无法直接Spring Initialize 创建成功，  所以就通过创建maven项目来创建spring boot项目
+  所以这个时候需要自己手动的将相关的springboot内容添加一下
+  和goods服务一样，
+  首先继承父依赖，父依赖现在被包装起来了，继承自己的一个父依赖即可
+   自己的父依赖会继承springboot的父依赖
+   -->
+    <!-- 统一继承的父项目 -->
+    <parent>
+        <groupId>com.bjpowernode.springcloud</groupId>
+        <artifactId>34-springcloud-service-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../34-springcloud-service-parent/pom.xml</relativePath>
+    </parent>
+
+
+    <groupId>com.bjpowernode.springcloud</groupId>
+    <artifactId>34-springcloud-service-portal</artifactId>
+    <version>1.0.0</version>
+
+
+
+
+    <!--
+        然后进行拷贝goods服务中pom.xml中的name、description、properties标签
+    -->
+    <name>34-springcloud-service-portal</name>
+    <description>34-springcloud-service-portal project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+
+    <!--以及拷贝goods服务pom.xml当中的web 起步依赖
+    添加起步依赖，该依赖即web开发，因为消费者也是一个web项目，即web开发
+   -->
+    <dependencies>
+       <!-- spring web 起步依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--消费者的controller也需要需要公共项目 commons的Constants等、model等-->
+        <!--依赖commons的常量类 model类
+        依赖统一的springcloud-service-commons项目
+        然后进行import Changes
+        -->
+        <dependency>
+            <groupId>com.bjpowernode.springcloud</groupId>
+            <artifactId>34-springcloud-service-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+
+        <!--向 eureka server服务注册中心进行注册消费者服务
+            eureka client客户端依赖
+            spring-cloud-starter-netflix-eureka-client
+            第一步添加依赖
+            第二步 配文件 application.properties
+            第三部 写代码 添加 @EnableEurekaClient注解
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+    </dependencies>
+    <!--如上述添加完成之后开始写程序
+    将goods服务的pom.xml粘贴过来到resources当中
+    -->
+
+</project>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.bjpowernode.springcloud</groupId>
+    <artifactId>34-springcloud-service-commons</artifactId>
+    <version>1.0.0</version>
+
+    <!--
+    该当前项目依然是SpringBoot项目，和之前一样
+    1. 首先继承父依赖 parent,有一个统一的父依赖 继承统一的父依赖，从goods服务中的pom.xml中粘贴过来或者 portal中的pom.xml粘贴过来即可
+    统一继承的父项目
+    -->
+    <parent>
+        <groupId>com.bjpowernode.springcloud</groupId>
+        <artifactId>34-springcloud-service-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../34-springcloud-service-parent/pom.xml</relativePath>
+    </parent>
+
+</project>

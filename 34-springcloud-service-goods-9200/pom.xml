@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 统一继承的父项目 -->
+    <parent>
+        <groupId>com.bjpowernode.springcloud</groupId>
+        <artifactId>34-springcloud-service-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath>../34-springcloud-service-parent/pom.xml</relativePath>
+    </parent>
+
+    <groupId>com.bjpowernode.springcloud</groupId>
+    <artifactId>34-springcloud-service-goods-9200</artifactId>
+    <version>1.0.0</version>
+
+    <name>34-springcloud-service-goods-9200</name>
+    <description>34-springcloud-service-goods-9200 project for Spring Boot</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <dependencies>
+        <!-- spring web 起步依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!--mybatis-spring-boot-starter-->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+        <!-- MySQL的jdbc驱动包 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!--依赖commons的常量类 model类
+        依赖统一的springcloud-service-commons项目
+        -->
+        <dependency>
+            <groupId>com.bjpowernode.springcloud</groupId>
+            <artifactId>34-springcloud-service-commons</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
+
+        <!--
+        portal 和 goods 可以往 eureka-server 注册中心 进行注册
+        首先看服务提供者如何进行注册
+        服务提供者进行注册，首先相当于 要将 eureka 集成到 goods 服务提供者项目当中来
+        将eureka集成到 goods服务提供者项目中来，基本上和springboot开发是一样的。
+        三个步骤: 加依赖、配文件、写代码
+        1. 添加依赖 spring-cloud-starter-netflix-eureka-client [import Changes]
+        2. application.properties文件当中进行配置 eureka相关内容，即配置本身该服务提供者服务为eureka-client，并向eureka-server进行注册
+        3. 写代码，即在spring boot 程序入口函数处添加注解 @EnableEurekaClient 开启eureka客户端
+
+        -->
+        <!--添加的依赖如下 eureka client 客户端
+        这个依赖和 eureka-server服务端依赖不一样，
+        服务端依赖为 spring-cloud-starter-netflix-eureka-server
+        客户端依赖为 spring-cloud-starter-netflix-eureka-client
+        server和client单词不一样
+        这个是第一步添加依赖，接下来去往application.properties进行配置 eureka client
+
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <resources>
+            <!--进行编译mapper文件夹当中的.xml文件，否则无法识别得到 not found sql statement-->
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.*</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+</project>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="34-springcloud-service-commons" />
+        <module name="34-springcloud-service-eureka" />
+        <module name="34-springcloud-service-goods-9100" />
+        <module name="34-springcloud-service-goods-9200" />
+        <module name="34-springcloud-service-portal" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="34-springcloud-eureka" target="1.5" />
+      <module name="34-springcloud-service-protal" target="1.5" />
+      <module name="_34springcloudserviceprotal" target="1.5" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="34-springcloud-service-commons" options="-parameters" />
+      <module name="34-springcloud-service-eureka" options="-parameters" />
+      <module name="34-springcloud-service-goods-9100" options="-parameters" />
+      <module name="34-springcloud-service-goods-9200" options="-parameters" />
+      <module name="34-springcloud-service-parent" options="-parameters" />
+      <module name="34-springcloud-service-portal" options="-parameters" />
+    </option>
+  </component>
+</project>
