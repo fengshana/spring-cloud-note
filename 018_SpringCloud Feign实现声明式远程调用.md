@@ -192,9 +192,131 @@ feign主要是提供类似于dubbo的方式，弄一个接口放在commons项目
 
 
 
-
+##### spring cloud Eureka宕机-调用本地缓存+问答交流
 
 问题：客户端负载均衡能再说说吗？
 
+客户端负载均衡原理：
 
+指的是ribbon 这个jar包，通过该jar包来进行实现的负载均衡。（ribbon当中存在有很多个负载均衡算法，去进行调用远程服务有默认的负载均衡算法即ZoneAvoidanceRule该实现类进行实现的负载均衡算法）
+
+传统的负载均衡即说的是Nginx通过分发请求（当中也有不同的负载均衡策略）分发到集群部署的子服务上。
+
+![image-20210522010835354](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210522010835354.png)
+
+
+
+即该上图的理解。
+
+分一下步骤来看，现在有后端服务有三台goods service服务，通过集群的方式进行部署的服务。
+
+即服务提供者有三个，都是goods service只不过它们的端口不一样或者ip端口都不一样。通过集群的方式进行部署。集群部署完成之后，会分别将这三个服务提供者goods service启动起来，这三个服务启动起来之后就都会向eureka server注册中心上进行注册服务，因为goods service 的application.properties当中存在有eureka.client.service-url.defaultZone标注有三台eureka server高可用注册中心集群的url，goods service中依赖有eureka client。goods service作为服务提供者以及eureka client肯定是要向eureka server注册中心进行注册服务的。goods service有可能注册到eureka server三台当中的某一台eureka server，由于eureka server高可用注册中心集群之间它们是相互会进行数据的复制的，所以两两相互进行复制，因为eureka server高可用集群之间它们两两相互进行注册。所以三个goods service服务提供者服务在三台机器eureka server注册中心上都会有一个注册信息在上面。
+
+那么接下来就是客户端，客户端启动，该客户端APP也是作为一个服务，消费者服务，也是一个微服务，那么这个时候APP客户端服务启动之后也会向eureka server高可用集群中做一个服务注册，除此之外，APP客户端还会需要调用远程服务，即调用goods service集群部署当中的某一个goods service服务。
+
+所以此时APP客户端需要通过eureka server进行获取远程服务的相关信息，即发现服务就是去eureka 注册中心将集群部署的三个goods service远程服务的注册信息获取得到，即APP客户端从eureka server中获取三个goods service远程服务往eureka server中注册时的服务注册信息，即发现服务。
+
+三个goods service服务的注册信息拿到程序当中来之后，那么此时APP客户端程序的jar包ribbon当中就帮助开发者进行实现了负载均衡，因为它已经知道了有三个goods service服务了，这三个goods service服务的ip、端口已经通过发现服务获取到了，已经知道三个goods service服务的ip、端口，那么这个时候可以在APP客户端通过ribbon基于负载均衡算法随机、轮询等方式，基于这些方式去进行调用远程服务goods service。
+
+也就是在调用之间有一个ribbon jar包，在调用远程服务之前会经过该jar包当中的负载均衡策略的算法，该算法放在了 chooseServer()方法当中了，chooseServer选择服务方法，该方法作为选择服务，会基于其中的规则就看目前配置的是什么规则，配置的是随机RandomRule那么此处将随机选择集群部署的goods service中的一个服务，如果没有配置那么默认的规则是ZoneAvoidanceRule，是一个综合考量的规则即宕机可能性大小以及性能大小方面的考虑去进行选择调用集群部署的goods service当中的某一个，在入口类ILoadBalancerRule当中有方法chooseServer，而chooseServer又有着多个实现方式。
+
+客户端负载均衡即这个负载均衡是在客户端进行实现的，而服务端负载均衡是什么？
+
+即APP端客户端请求先回发送到服务器当中的Nginx或者其他组件，此时服务器再根据某一种规则策略再做转发，转发到集群部署的某一个服务。那么这个叫做服务器端的负载均衡。
+
+在客户端代码当中进行实现的，这个叫做客户端负载均衡。
+
+```java
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
+
+package com.netflix.loadbalancer;
+
+import java.util.List;
+
+public interface ILoadBalancer {
+    void addServers(List<Server> var1);
+
+    Server chooseServer(Object var1);
+
+    void markServerDown(Server var1);
+
+    /** @deprecated */
+    @Deprecated
+    List<Server> getServerList(boolean var1);
+
+    List<Server> getReachableServers();
+
+    List<Server> getAllServers();
+}
+
+```
+
+中的方法
+
+```java
+Server chooseServer(Object var1);
+```
+
+该方法有多个实现方式BaseLoadBalancer、NoOpLoadBalancer、ZoneAwareLoadBalancer三种选择服务的方式；
+
+先经过ZoneAwareLoadBalancer中的super.chooseServer(key)，再走到BaseLoadBalancer中的chooseServer(Object key)，再在BaseLoadBalancer中chooseServer中走到if (this.rule == null) { 此时通过断点就可以发现这是走到哪一个负载均衡策略/规则。
+
+
+
+
+
+feign负载均衡算法也就是ribbon的算法吗？
+
+feign的负载均衡，其底层就是ribbon的负载均衡。feign的负载均衡底层就是ribbon去进行实现的。所以可以看到当@FeignClient当中的方法上的注解@RequestMapping("路径A")和远程服务当中的方法上的@RequestMapping("路径B")，由于路径不一致映射错误导致报错时发现在报错之前，进行打印了自定义负载均衡策略的一些日志信息，表示feign仍然是进行调用了MyRule自定义的负载均衡策略。而MyRule是实现的ribbon负载均衡的相关接口即AbstractLoadBalancerRule。（AbstractLoadBalancerRule抽象类实现了接口IRule。）进行重新定义了ribbon的默认负载均衡策略。
+
+所以feign底层是使用ribbon进行负载均衡的。所以feign的负载均衡即使用底层的ribbon去进行实现的。
+
+
+
+问题：简单理解就是一个在客户端分发请求，一个在服务器端进行分发请求？
+
+是的，一个是借助服务器Nginx、HAProxy、LVS等，它都是首先将请求分发到服务器，然后这个服务器再帮助开发者进行请求的分发。那么这个叫做服务端的负载均衡。
+
+客户端的负载均衡即通过代码去进行实现。
+
+
+
+今天主要讲解了Ribbon、Feign声明式的调用方式。
+
+另外还有一个小问题：因为和dubbo进行了一个对比，dubbo服务在注册完成之后，消费者去进行调用服务提供者，然后注册中心宕机了，那么这个消费者还能不能再去进行调用服务提供者？dubbo当中存在有该问题，dubbo当中当服务提供者注册完成之后，然后消费者调用服务提供者，然后此时注册中心宕机了，注册中心不能使用了，那么在dubbo当中，消费者是可以依然调用服务提供者的，虽然注册中心宕机了，但是在dubbo当中服务消费者依然还可以调用服务提供者。
+
+在spring cloud当中也是这样的机制。 
+
+现将两份服务提供者、消费者服务启动起来。以及目前当前在linux上eureka server服务是可用的，此时进行访问一次http://localhost:8080/cloud/goods之后，将linux eureka server服务停掉，再尝试该地址请求测试http://localhost:8080/cloud/goods接口会发现依然会有响应，响应如下：`{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}`
+
+浏览器地址访问并没有发生请求故障，而是可以进行访问。
+
+然后接着三台eureka server不是在linux环境上进行部署的吗，此时将linux环境上的三个eureka server服务停掉。即演示eureka server宕机的情况。
+
+```bash
+ps -ef|grep eureka
+#找到三个eureka server的进程号
+
+kill  进程号1 进程号2 进程号3
+#通过这种方式关闭进程，进程不会立刻停掉，即不会立刻关闭掉，需要等待一段时间
+
+ps -ef|grep eureka
+ps -ef|grep eureka
+ps -ef|grep eureka
+ps -ef|grep eureka
+#查看进程信息渐渐少了
+```
+
+此时当linux服务上的注册中心关闭服务之后，本地的goods9100和goods9200就出现报错，连接不到注册中心的错误。
+
+因为服务提供者、服务消费者即eureka client和eureka server之间存在有心跳的机制， 然后这个时候通过消费者去调用服务
+
+测试访问地址如下：http://localhost:8080/cloud/goods
+
+也就是说该服务提供者向注册中心注册的注册信息也会帮开发者进行缓存，即缓存服务端列表，（Ctrl+f5强制刷新浏览器页面也有响应）目前eureka server三台高可用集群已经关闭服务了即已经宕机了，注册中心已经不可用了。
+
+所以spring cloud eureka和dubbo一样，也有注册中心宕机之后服务列表缓存的机制。结论就是：当服务提供者启动之后注册到注册中心了，注册好之后然后将服务消费者进行启动，消费者启动之后它就会从注册中心把服务列表缓存到本地，因为消费者调用远程服务地址，而将服务列表缓存到本地之后，就不在需要去到eureka server注册中心上拿取服务列表了。
 
