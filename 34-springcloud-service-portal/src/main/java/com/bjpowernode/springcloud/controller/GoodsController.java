@@ -1,13 +1,18 @@
 package com.bjpowernode.springcloud.controller;
 
+import com.bjpowernode.springcloud.constants.Constant;
 import com.bjpowernode.springcloud.model.ResultObject;
 import com.bjpowernode.springcloud.service.GoodsRemoteClient;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+
+import javax.xml.ws.Response;
 
 //@Controller
 @RestController
@@ -173,5 +178,244 @@ public class GoodsController {
         * 而在portal服务当中，我们只需要调用goodsRemoteClient.goods()接口
         * */
     }
+
+
+
+
+
+
+    /**
+     * 使用hystrix进行服务降级步骤
+     * 1.服务消费者方添加spring-cloud-starter-netflix-hystrix依赖
+     * 2.在服务消费者方main中添加注解@EnableHystrix/@EnableCircuitBreaker/@SpringCloudApplicaiton注解
+     * 3. 在服务消费者controller调用远程服务的方法上添加注解@HystrixCommand，并配置fallbackMethod方法保持方法签名一致
+     *
+     * 测试步骤
+     * 1. 启动linux虚拟机当中的注册中心 eureka server 三台高可用集群 eureka server（三个节点）。
+     * linux: [ps -ef|grep eureka、ll、./eureka_server.sh、ps -ef|grep eureka、ifconfig] | windows: 检查本地mysql服务是否开启[net start mysql]
+     * 内网地址依然为192.168.227.128没变，eureka serve地址（检查是否可用）：http://192.168.227.128:8761/、http://192.168.227.128:8762/、http://192.168.227.128:8763/
+     * 2. 接着debug启动两个服务提供者goods9100和goods9200，服务提供者提供好之后会自动往注册中心eureka server进行注册，注册中心eureka server目前在linux当中有三个结点，都是已经启动部署好了的，所以这边服务提供者就可以直接去eureka server进行注册服务，届时服务消费者就可以直接去进行调用远程服务了（获取eureka server的远程服务注册信息然后再去调用）
+     * 3. 最后debug启动portalApplication服务，portal前端消费者服务。（springcloud当中就是通过一系列的组件进行构成的，spring cloud当中有很多的组件）
+     * 4. 上述服务启动完成之后，测试请求访问地址如下：http://localhost:8080/cloud/goodsHystrix 进行调用远程服务
+     *
+     * 访问地址返回如下响应：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+     * 从响应内容上来看可以知道是触发了服务降级，也就是使用到了@HystrixCommand注解当中的服务调用了fallback()方法
+     * 由于controller中goodsHystrix()方法是调用了goodsRemoteClient.goods()方法（即使用feign声明式远程调用），该goodsHystrix()方法的降级@HystrixCommand方法为fallback()方法
+     * goodsRemoteClient.goods()是通过feign进行声明式调用远程服务。此时看到goodsRemoteClient.goods()在服务提供者goods服务goods9100/goods9200当中Controller中的服务实现，即GoodsController中的goods()方法的实现。
+     * 而此时远程服务goods服务的GoodsController中的goods()方法实现中通过goodsService.getAllGoods()进行访问数据库，有可能是查询数据库的时间过长，也就是查询太慢，从而导致就进行服务降级了。
+     * hystrix默认的调用远程服务超时时间为1000毫秒，当通过使用feign声明式调用远程服务的这个过程当中兴许是这个过程时长超过了1000毫秒，所以hystrix判定远程服务不可用、异常所以才进行服务降级调用fallbackMethod="fallback"方法
+     * 1000毫秒=1秒钟，也就是hystrix默认调用远程服务超时时长为1秒钟，而在通过feign声明式调用远程服务的过程中已经超过了1秒钟，所以此时@HystrixCommand对其进行了服务降级处理，即调用fallback进行返回前端
+     * hystrix默认为1秒服务降级。
+     * 可以通过debug的方式启动goods9100、goods9200、portal服务，将断点打在 portal中的controller中goodsHystrix()方法的return goodsRemoteClient.goods();该行代码上。
+     * 然后再测试地址：http://localhost:8080/cloud/goodsHystrix，此时可以看到断点起作用了，先计算一下goodsRemoteClient.goods()返回了一些什么东西，鼠标选中goodsRemoteClient.goods()之后，点击下方 Debugger一栏中像计算器的图标，即Evaluate Expression（或者可以通过按Ctrl + U 快捷键查看）
+     * 在选中代码`goodsRemoteClient.goods()`，然后快捷键Ctrl+U/点击计算器图标之后，会弹出弹窗Evaluate，在弹窗中直接点击按钮 Evaluate即可。
+     * 可以看到Result结果如下：
+     result = {FeignException$NotFound@10357} Method threw 'feign.FeignException$NotFound' exception.
+     status = 404
+     content = {byte[137]@10361}
+     detailMessage = "status 404 reading GoodsRemoteClient#goods()"
+     cause = {FeignException$NotFound@10357} "feign.FeignException$NotFound: status 404 reading GoodsRemoteClient#goods()"
+     stackTrace = {StackTraceElement[48]@10363}
+     suppressedExceptions = {Collections$UnmodifiableRandomAccessList@9966}  size = 0
+     * 在这当中可以看到异常：`Method threw 'feign.FeignException$NotFound' exception.`
+     * 发生404错误：`feign.FeignException$NotFound: status 404 reading GoodsRemoteClient#goods()`
+     * 所以此时才会触发@HystrixCommand的服务降级调用了fallback()，即调用远程服务中出错也是会进行降级处理。此时可以知道后端方法是有问题的。导致了报错。并不是源于hystrix默认超时一秒钟进行服务降级的原因。
+     * 看到status 404 reading GoodsRemoteClient#goods()可以知道是GoodsRemoteClient在进行调用远程服务goods时出现了404，这个时候就去看到goodsRemoteClient.goods当中的实现。
+     *  此时的GoodsRemoteClient中接口映射为
+     *  @RequestMapping("/service/goodsXXX")
+     *     public ResultObject goods();
+     * 而远程服务提供者goods9100、goods9200的接口实现为
+     * @RequestMapping("/service/goods")
+     * public ResultObject goods(){}
+     * 也就是说GoodRemoteClient当中的映射RequestMapping路径和远程服务提供者当中的RequestMapping路径不一致，所以才会报错，status 404 reading GoodsRemoteClient#goods() 404 没有找到远程服务接口的错误（GoodsRemoteClient API接口当中的方法需要和服务提供者当中的Controller中的方法实现要保持一致，如果不一致就会导致404，feign底层在调用ribbon+restTemplate的时候路径有问题）
+     * 由于GoodsRemoteClient 该API接口是写在commons服务中的，所以此时通过parent进行clean并重新compile，然后再次启动goods9100、goods9200、portal服务。
+     * 再次请求地址测试：http://localhost:8080/cloud/goodsHystrix，响应如下：{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}
+     * 可以发现是正常响应了数据。并没有服务降级。
+     *
+     * 同时从该操作当中可以看到，尽管在goodsRemoteClient在调用远程服务的时候发生了报错，但是返回给前端并没有问题，而是进行了服务降级，给了默认的值
+     *
+     * portal服务pom.xml中添加热部署插件这样在开发测试的时候会便利一些不用频繁的进行重启服务。goods9100服务和goods9200也添加一下该插件
+     * <!--spring boot 开发 自动热部署-->
+     <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-devtools</artifactId>
+        <optional>true</optional>
+    </dependency>
+    目前暂时现将消费者服务portal进行重启，（微服务测试、启动服务比较麻烦）
+
+    当前在进行修改了GoodsRemoteClient当中@RequestMapping当中的路径之后，访问服务是不会有报错的，因为此时GoodsRemoteClient调用远程服务是正常的。即如果goodsRemoteClient.goods()该请求在1000毫秒也就是1秒内进行返回了结果，那么就不会触发hystrix的服务降级。
+    而goodsRemoteClient.goods()调用远程服务不是在1秒钟进行返回了响应数据，而是超过了1秒钟，那么这个时候Hystrix就会触发服务降级，即调用fallback()
+    在代码无问题时，会进行正常的响应。即使得hystrix可以在1秒钟之内拿取得到响应结果，而且是正常的响应，那么这个时候就不会触发hystrix的服务降级。远程服务调用返回的响应并不正常，那么就会触发服务降级。
+    goodsRemoteClient.goods()在进行远程服务调用时可以1秒钟之内进行返回结果从而不会触发hystrix的服务降级即调用fallback进行返回给前端。
+
+     *
+     * 使用hystrix进行服务降级
+     * 即测试消费者地址 http://localhost:8080/cloud/goodsHystrix
+     * 通过消费者去请求服务提供者远程的服务，如果服务提供者的服务发生异常或者超时，到时候就会走到@HystrixCommand注解当中配置的fallbackMethod="fallback",fallback()方法当中来
+     * 即当前还需要写一个方法叫做 fallback()，该方法的签名和public ResultObject goodsHystrix(){}保持一致，即fallback()方法为 public ResultObject fallback(){}即可
+     * 查询所有商品
+     * @return
+     */
+//    @HystrixCommand(fallbackMethod = "fallback")
+    /*
+    * application.properties配置文件当中进行配置hystrix.command.default.execution.timeout.enabled=true、hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=5000
+    * 就相当于此时在注解当中配置的是一样的意思。
+    * 指定执行超时降级服务可用
+    * @HystrixProperty(name = "execution.timeout.enabled", value = "true"),
+    * 设置hystrix超时时间为5秒
+    * @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000")
+    * 通过application.properties配置文件的方式进行配置这两个配置项取值更加方便。
+    * 此时rebuild portal服务，重新启动后测试地址：http://localhost:8080/cloud/goodsHystrix
+    * 响应结果如下：{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}
+    * 通过响应结果可以知道没有走服务降级，即通过注解的方式进行配置hystrix的超时时间生效了。
+    * 总之修改hystrix的超时时间需要ribbon.ReadTimeout和hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds两者，谁的取值小谁生效
+    * */
+    @HystrixCommand(fallbackMethod = "fallback",
+                    commandProperties = {
+                            @HystrixProperty(name = "execution.timeout.enabled", value = "true"),
+                            @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000")
+                    })
+    @RequestMapping("/cloud/goodsHystrix")
+    public ResultObject goodsHystrix(){ //此处的Model model没有作用进行删除
+//        return goodsRemoteClient.goods();
+        /*
+    做一个测试即使得feign 声明式远程调用服务的时间增加，即超过1秒钟。这个使得时间超过1秒钟的操作可以直接在portal的controller接口层goodsHystrix()方法当中去做，
+    也可以去到对应的goods 9100或者是goods9200服务的controller接口goods()方法实现当中去进行修改，使得响应数据时间超过1s，两种方式都可以。
+    该修改远程服务调用时间超过1s即直接在当前portal客户端服务的controller中的goodsHystrix()方法当中进行修改即可。
+    让线程进行睡眠一会儿，即超过1s即可。
+    Hystrix默认是一秒，而此时只需要让线程进行沉睡两秒即可，那么就会触发Hystrix的服务降级
+    该让Thread线程休眠两秒的代码在写完之后，将该module进行rebuild，
+    即在idea的最上方菜单栏中找到[Build]-->[Build Module '34-springcloud-service-portal']，进行重新编译即可，编译完成之后spring boot devtools自动热部署插件会将portal服务自动热部署
+    在portal服务经过spring boot devtools自动热部署插件重新部署之后，再次进行访问测试接口地址：http://localhost:8080/cloud/goodsHystrix，而此时返回的响应结果为：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+    此时进行触发了Hystrix的服务降级，即调用fallbackMethod当中配置的方法fallback()提供默认值返回给前端。且再怎么进行反复刷新返回的都是经过服务降级之后的默认数据，
+    因为goodsHystrix方法中沉睡了两秒，即超过了hystrix默认的1秒时间，所以hystrix才会触发服务降级。
+    且每次刷新地址栏之后返回数据的时间都是2s中后浏览器才得到了默认响应数据。
+
+    这就是hystrix的服务降级的测试，即如果调用远程服务超时了，那么hystrix将会走入到服务降级当中即调用@HystrixCommand中配置的fallbackMethod="fallback"方法。
+    以上是一种情况。服务超时会导致服务降级。上面还有就是调用远程服务异常即GoodsRemoteClientAPI接口当中@RequestMapping路径和服务提供者服务的controller实现@RequestMapping的路径不一致，导致feign在调用远程服务的时候找不到服务接口，此时也会造成hystrix的服务降级。
+
+    */
+//        1. 服务超时，会降级
+//        try {
+//            System.out.println("==============goodsHystrix 开始进入睡眠==================");
+//            Thread.sleep(2000);//沉睡两秒，休眠两秒，因为hystrix默认是1秒，如果1秒当中调用远程服务没有结果那么则hystrix就会走服务降级即调用fallback();此时通过Thread.sleep沉睡两秒就会触发hystrix的服务降级，即调用fallback方法进行返回给前端默认数据
+//            System.out.println("==============goodsHystrix 结束睡眠==================");
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+
+//        2. （消费者）服务异常，会降级（该portal服务当中的该controller接口层当中的goodsHystrix()方法中出现了异常，那么也是会服务降级的。如果在远程服务调用的时候，该远程服务异常了，会降级。）
+//        进行模拟异常
+//        String str = null;
+//        if(str == null){
+//            throw new RuntimeException("服务异常了");
+/*            那么这个时候也会走服务降级。进行测试是否响应数据为服务降级之后的默认数据。
+              同样还是点击Build当中的Build Module 34-sringcloud-service-portal即可，通过spring boot的自动热部署工具进行自动重启服务即可。
+              portal服务启动好之后，测试服务地址：httpL://localhost:8080/cloud/goodsHystrix，返回响应数据：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+              从响应数据中可以发现，此操作即消费者服务异常确实是会引起Hystrix进行服务降级，即走入到@HystrixCommand命令中配置的fallbackMethod中的fallback方法中。
+*/
+//        }
+
+//        3. 在服务提供者服务，即远程服务发生异常，那么也会触发HystrixCommand的服务熔断降级。此时去远程的服务goods9100/goods9200中的controller goods()实现方法当中进行修改。
+//        goods9100和goods9200都需要进行做线程沉睡休眠两秒的操作，因为服务提供者集群部署了两台服务，feign底层会通过ribbon进行负载均衡到这两台中的某一台服务上，所以两台服务goods9100和goods9200都需要进行沉睡休眠2秒的操作。
+//        在goods9100和goods9200的远程服务当中进行休眠沉睡了两秒之后，将goods9100和goods9200进行服务重启，接着后续才会通过spring-boot-devtools自动热部署工具进行热部署服务。（即热部署插件依赖加上之后需要立即进行重启，重启完才会生效，之前添加了热部署依赖但是这两个服务并没有进行重启所以现在需要重启令热部署生效，重启完goods9100和goods9200服务之后热部署生效）
+//        改了之后可以发现在远程服务当中出现异常或者是超时超过1秒钟，都会引起Hystrix的服务降级处理；
+//        此时测试的是 服务提供者中 也就是远程服务中 响应超时，进行了沉睡休眠两秒；远程服务有goods9100和goods9200，它们所提供的的服务当中都做了线程沉睡休眠两秒的操作。即会导致响应超时；
+//        测试访问地址：http://localhost:8080/cloud/goodsHystrix；返回响应内容如下：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+//        通过响应内容即可知道触发了Hystrix的服务降级，也就是调用了@HystrixCommand注解当中配置的fallbackMethod中fallback方法返回的默认数据
+//        即远程服务响应数据超时也是会触发Hystrix的服务降级；消费者portal的controller goodsHystrix()中并没有进行线程休眠两秒。当前该服务当中的线程休眠两秒和抛出运行时异常都注释掉了。
+//        为的就是要测试远程服务中的响应超时，远程服务goods9100和goods9200当中都进行开启了线程休眠两秒操作，而Hystrix默认是1秒，那么远程服务显然是超时了。控制单一变量。
+//        由于远程服务超时所以会走Hystrix的服务降级。即走到@HystrixCommand注解中配置的fallbackMethod fallback方法中去返回默认的数据。如果将远程服务当中的线程休眠沉睡两秒注释掉去掉，则不会发生Hystrix触发服务降级，而是会正常响应数据
+//        远程服务中如果抛异常，那么也是一样的，也会触发Hystrix的服务降级。即返回fallbackMethod fallback方法中默认的数据给前端。服务测试地址：http://localhost:8080/cloud/goodsHystrix，响应数据如下：{"statusCode":1,"statusMessage":"服务降级了","data":null}，调用的是goods9200当中的服务打印了"服务异常了"的日志信息，即说明远程服务内不管是响应超时还是抛出异常都会触发Hystrix的服务降级。
+
+//        System.out.println("==============goodsHystrix feign声明式远程调用服务开始==================");
+        return goodsRemoteClient.goods();
+
+    }
+
+    /**
+     * 降级方法 fallback；即如果通过goodsRemoteClient.goods()发生了调用远程服务异常、响应超时等那么就会调用@HystrixCommand注解中配置好的降级方法 fallbackMethod = "fallback"
+     * 到时候给前端返回一个默认结果即可即：return new ResultObject(Constant.ONE, "服务降级了");
+     * 此时就实现了不会将goodsRemoteClient.goods()调用远程服务当中出现的异常、响应超时等信息发送给前台，而是会给前台返回结果为默认的值，即降级方法当中返回的内容
+     * 此时就编写完成可以进行测试hystrix 服务降级
+     *
+     * 该方法对应着上述goodsHystrix()方法上的注解@HystrixCommand中的配置项 fallbackMethod = "fallback"，两者存在映射
+     * 当前该fallback方法的访问类型、返回类型（签名）和上述方法goodsHystrix()进行保持一致。
+     * 相当于如果goodsHystrix()方法当中，通过goodsRemoteClient feign声明式调用远程服务.goods()方法超时了，或者异常了
+     * 那么此时则goodsHystrix()方法当中的内容即不再执行了也就是 return goodsRemoteClient.goods()不再去进行执行
+     * 然后就会去调用@HystrixCommand注解当中配置好的fallbackMethod = "fallback"，fallback()方法。
+     * 那么该fallback()方法和上述的goodsHystrix()的方法签名是一样一致的。
+     * 因为在调用fallback()方法的时候是需要达到和goodsHystrix()方法一样的目的。只是fallback()方法返回的数据可能是一个默认的值。
+     * 即在fallback()方法当中return 一个默认值，该默认值为ResultObject的实例对象。
+     * 而在goodsHystrix()方法当中返回的取值是真实的有数据的，是从缓存或者是从数据库当中拿取到的记录行。而fallback()仅仅只是一个默认值而已。
+     * 以上就是使用hystrix 默认的实现方式。
+     *
+     * 降级方法，也就是备用的方法。当远程服务不可用、远程服务超时、远程服务异常的时候，服务降级被触发，到时候就会直接调用fallback()方法返回给前端默认的数据。
+     * @return
+     */
+    public ResultObject fallback(){
+        return new ResultObject(Constant.ONE, "服务降级了");//响应码为0表示响应正常，响应码为1表示响应是不正常的
+    }
+
+
+    /*
+    * 该为ribbon+restTemplate进行实现远程服务调用
+    * 通过ribbon+restTemplate进行测试hystrix修改默认配置超时时间为5秒是否生效
+    * 即以下配置
+    ribbon.ReadTimeout=6000
+    ribbon.ConnectTimeout=3000
+
+    hystrix.command.default.execution.timeout.enabled=true
+    hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=5000
+    先通过ribbon+restTemplate进行测试，重新编译portal服务
+    portal服务重新启动后测试接口：http://localhost:8080/cloud/goodsRibbon
+    返回响应数据：{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}
+    即说明没有触发Hystrix的服务降级。即上述配置hystrix超时时间为5秒生效了。
+    ribbon.ReadTimeout为6秒，hystrix设置的超时时间为5秒，谁的值小取谁的值生效，所以此时hystrix超时时间为5秒生效了。
+    远程服务超时时间为2秒，hystrix超时时间为5秒，大于远程服务超时时间，所以不会触发hystrix的服务降级。
+
+    这当中有个坑，即取ribbo.ReadTimeout和execution.isolation.thread.timeoutInMilliseconds两个配置值的最小值为准。
+    所以就导致了这两个配置项都需要进行配置一下，即ribbon.ReadTimeout默认也是1秒，hystrix默认超时时间也是1秒，所以都需要改。
+    不管是使用ribbon+restTemplate调用远程服务还是通过feign声明式调用远程服务，它其中底层都是使用ribbon来去进行做负载均衡的。将ribbon.ReadTimeout和execution.isolation.thread.timeoutInMilliseconds两个配置项的取值都改动一下。
+
+    上述即为修改hystrix的默认超时时间。通过配置文件进行修改的取值。
+    另外还有一个办法即为通过代码去进行修改默认超时时间。
+    即通过注解@HystrixCommand中的配置项去进行修改默认超时时间（现将配置文件applicatio.properties中关于hystrix配置默认超时时间的配置项进行注释）
+    即在@HystrixCommand中配置默认超时时间就相当于 application.properties当中的配置项: [hystrix.command.default.execution.timeout.enabled=true、hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds=5000]
+    当然ribbon的读取超时还是要在application.properties当中进行配置的，也就是说ribbon.ReadTimeout=6000在application.properties配置文件当中不能进行注释。
+    因为hystrix的默认超时时间是根据execution.isolation.thread.timeoutInMilliseconds和ribbon.ReadTimeout两个配置项的取值比较大小得来的，谁小取谁，所以在配置文件application.properties当中还是需要表明ribbon.ReadTimeout读取超时时间时长
+
+    * */
+    @HystrixCommand(fallbackMethod = "fallback")
+    @RequestMapping("/cloud/goodsRibbon")
+    public ResultObject goodsRibbon() {
+        //调用远程的一个controller，RESTful的调用
+        ResponseEntity<ResultObject> resposneEntity= restTemplate.getForEntity(GOODS_SERVICE_URL_02,ResultObject.class);
+        return resposneEntity.getBody();
+    }
+
+
+    /*
+    * 问题：那如果 调用的远程服务宕机了，它还怎么去走下面的方法呢？
+    * 即如果远程服务中goods9100和goods9200服务都宕机了，那么是否会触发Hystrix的服务降级，以及如果不会触发Hystrix的服务降级那么会返回前端远程服务宕机的报错信息吗？
+    * 即测试一下，将goods9100和goods9200的服务进行关闭。单独留下portal服务。
+    * 即goods9100:Process finished with exit code -1   goods9200:Process finished with exit code -1 仅有portal服务是开启的。刷新下面的测试地址会发现走的是服务降级
+     * 这个时候访问地址：http://localhost:8080/cloud/goodsHystrix 响应数据如下:{"statusCode":1,"statusMessage":"服务降级了","data":null}
+    * 也是会触发Hystrix的服务降级。
+    * 即当远程服务不可用的时候、抛出异常的时候、响应超时的时候，都将会触发Hystrix的服务降级。
+    * 消费者服务抛出异常、响应超时的时候也会触发Hystrix的服务降级。
+    *
+    * 那么这就是Hystrix提供的服务降级功能。即服务的熔断降级这样一个功能。
+    * 远程服务不可用、远程服务超时、远程服务异常等情况都可以进行触发Hystrix的服务降级。触发服务降级之后，需要有一个备用的方法即@HystrixCommand注解中fallbackMethod配置项的内容，fallback()方法
+    * 当服务降级被触发该fallback()备用的方法就会被调用返回给前端默认的数据。
+    *
+    *
+    * 服务宕机就相当于请求超时，404？
+    * 宕机即访问服务请求超时，没有响应。因为是controller调用controller，远程服务停止运行了，然而浏览器端进行直接访问远程服务的接口地址，也会出现打不开，是会进行请求一会儿，即请求超时之后才提示打不开该页面，即访问不到该页面
+    * 访问不到那么就会触发HystrixCommand的服务降级，请求超时触发服务降级，然后调用备用方法。
+    * 404是代表路径找不到。
+    * 以上就是测试的 Hystrix的服务降级
+    * */
 
 }

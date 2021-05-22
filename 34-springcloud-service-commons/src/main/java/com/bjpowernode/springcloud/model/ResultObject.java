@@ -37,6 +37,11 @@ public class ResultObject {
         this.data = data;
     }
 
+    public ResultObject(int statusCode, String statusMessage) {
+        this.statusCode = statusCode;
+        this.statusMessage = statusMessage;
+    }
+
     /*
     因为上面已经自己已经提供了一个存在有参数值的构造方法，然后jvm就不会去自动提供这个默认的构造方法了；所以此时需要自己手动写一下才会有该构造方法
     需要构造一个空的构造方法，即默认的构造方法

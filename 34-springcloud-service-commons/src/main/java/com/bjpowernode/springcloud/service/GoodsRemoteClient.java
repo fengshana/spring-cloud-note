@@ -74,7 +74,8 @@ public interface GoodsRemoteClient {
      * @return
      */
 //    @RequestMapping("/service/goods")
-    @RequestMapping("/service/goodsXXX")
+//    @RequestMapping("/service/goodsXXX")
+    @RequestMapping("/service/goods")
     public ResultObject goods();
     /*
     * 此处和服务提供者GoodsController中的goods上的@RequestMapping("/service/goods")中填写的值不一样，修改之后parent进行clean以及compile；接着重启PortalApplication
