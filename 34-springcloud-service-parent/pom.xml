@@ -30,6 +30,9 @@
 
         <!--服务提供者的集群服务，即存在第二个服务提供者goods，只不过端口不一样-->
         <module>../34-springcloud-service-goods-9200</module>
+
+        <!--将hystrix dashboard服务添加进来，即服务监控-->
+        <module>../34-springcloud-service-dashboard</module>
     </modules>
 
 

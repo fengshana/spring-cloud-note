@@ -274,7 +274,9 @@ public class GoodsController {
                     commandProperties = {
                             @HystrixProperty(name = "execution.timeout.enabled", value = "true"),
                             @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000")
-                    })
+                    },
+                    ignoreExceptions = Throwable.class //忽略异常，该异常的类可以写Exception.class或者是RuntimeException.class，或者是其他的一些xxxxException.class类，现在写的是最顶层的异常父类，写了ignoreException之后那么此时远程服务如果抛出了异常那么此时hystrix是不会理会也就是说不会服务降级，而是将异常直接抛给前端浏览器页面当中
+    )
     @RequestMapping("/cloud/goodsHystrix")
     public ResultObject goodsHystrix(){ //此处的Model model没有作用进行删除
 //        return goodsRemoteClient.goods();
@@ -317,6 +319,69 @@ public class GoodsController {
 */
 //        }
 
+        //测试@HystrixCommand注解的ignoreException = Throwable.class 是否生效 进行重启portal服务；访问测试地址http://localhost:8080/cloud/goodsHystrix 响应数据如下：
+        /*
+        Whitelabel Error Page
+This application has no explicit mapping for /error, so you are seeing this as a fallback.
+
+Sun May 23 15:04:46 CST 2021
+There was an unexpected error (type=Internal Server Error, status=500).
+?????
+java.lang.RuntimeException: ?????
+            at com.bjpowernode.springcloud.controller.GoodsController.goodsHystrix(GoodsController.java:325)
+            at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+            at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+            at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+            at java.lang.reflect.Method.invoke(Method.java:498)
+            at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.execute(MethodExecutionAction.java:116)
+            at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.executeWithArgs(MethodExecutionAction.java:93)
+            at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.execute(MethodExecutionAction.java:78)
+            at com.netflix.hystrix.contrib.javanica.command.GenericCommand$1.execute(GenericCommand.java:48)
+            at com.netflix.hystrix.contrib.javanica.command.AbstractHystrixCommand.process(AbstractHystrixCommand.java:145)
+            at com.netflix.hystrix.contrib.javanica.command.GenericCommand.run(GenericCommand.java:45)
+            at com.netflix.hystrix.HystrixCommand$2.call(HystrixCommand.java:302)
+            at com.netflix.hystrix.HystrixCommand$2.call(HystrixCommand.java:298)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:46)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:35)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.Observable.unsafeSubscribe(Observable.java:10327)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:51)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:35)
+            at rx.Observable.unsafeSubscribe(Observable.java:10327)
+            at rx.internal.operators.OnSubscribeDoOnEach.call(OnSubscribeDoOnEach.java:41)
+            at rx.internal.operators.OnSubscribeDoOnEach.call(OnSubscribeDoOnEach.java:30)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.Observable.unsafeSubscribe(Observable.java:10327)
+            at rx.internal.operators.OperatorSubscribeOn$SubscribeOnSubscriber.call(OperatorSubscribeOn.java:100)
+            at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction$1.call(HystrixContexSchedulerAction.java:56)
+            at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction$1.call(HystrixContexSchedulerAction.java:47)
+            at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction.call(HystrixContexSchedulerAction.java:69)
+            at rx.internal.schedulers.ScheduledAction.run(ScheduledAction.java:55)
+            at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+            at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+            at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+            at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+            at java.lang.Thread.run(Thread.java:748)
+
+            此时可以发现 异常直接抛给前端页面了。即Hystrix忽略异常，从而hystrix就不会走服务降级。然后将异常信息抛给了前台页面。
+
+        现在本地也就是portal服务的controller-goodsHystrix()抛出一个异常，然后portal服务进行重新编译一下。
+        重新启动后访问http://localhost:8080/cloud/goodsHystrix
+        响应在浏览器页面抛出异常：java.lang.RuntimeException: ?????  at com.bjpowernode.springcloud.controller.GoodsController.goodsHystrix(GoodsController.java:379)
+        也就是此时@HystrixCommand注解有了ignoreException之后服务消费端中产生的异常就将直接抛给页面，也就是将服务消费端goodsHystrix()当中的异常进行忽略，不走hystrix的服务降级
+        即这个时候不进行服务降级，而是抛给了前端页面，抛给了前端
+        */
+        String str = null;
+        if(str == null){
+            throw new RuntimeException("服务异常类");
+        }
+
 //        3. 在服务提供者服务，即远程服务发生异常，那么也会触发HystrixCommand的服务熔断降级。此时去远程的服务goods9100/goods9200中的controller goods()实现方法当中进行修改。
 //        goods9100和goods9200都需要进行做线程沉睡休眠两秒的操作，因为服务提供者集群部署了两台服务，feign底层会通过ribbon进行负载均衡到这两台中的某一台服务上，所以两台服务goods9100和goods9200都需要进行沉睡休眠2秒的操作。
 //        在goods9100和goods9200的远程服务当中进行休眠沉睡了两秒之后，将goods9100和goods9200进行服务重启，接着后续才会通过spring-boot-devtools自动热部署工具进行热部署服务。（即热部署插件依赖加上之后需要立即进行重启，重启完才会生效，之前添加了热部署依赖但是这两个服务并没有进行重启所以现在需要重启令热部署生效，重启完goods9100和goods9200服务之后热部署生效）
@@ -328,6 +393,21 @@ public class GoodsController {
 //        为的就是要测试远程服务中的响应超时，远程服务goods9100和goods9200当中都进行开启了线程休眠两秒操作，而Hystrix默认是1秒，那么远程服务显然是超时了。控制单一变量。
 //        由于远程服务超时所以会走Hystrix的服务降级。即走到@HystrixCommand注解中配置的fallbackMethod fallback方法中去返回默认的数据。如果将远程服务当中的线程休眠沉睡两秒注释掉去掉，则不会发生Hystrix触发服务降级，而是会正常响应数据
 //        远程服务中如果抛异常，那么也是一样的，也会触发Hystrix的服务降级。即返回fallbackMethod fallback方法中默认的数据给前端。服务测试地址：http://localhost:8080/cloud/goodsHystrix，响应数据如下：{"statusCode":1,"statusMessage":"服务降级了","data":null}，调用的是goods9200当中的服务打印了"服务异常了"的日志信息，即说明远程服务内不管是响应超时还是抛出异常都会触发Hystrix的服务降级。
+
+
+//      进行测试在客户端controller goodsHystrix方法中抛出异常后，则会触发Hystrix的服务降级处理，则走到@HystrixCommand配置的fallbackMethod中的fallback()方法里
+//      而fallback()中配置了Throwable throwable方法参数并进行打印了相关信息，此处测试是为了检查fallback当中的Throwable throwable是否拿取到了客户端抛出的异常。
+//      将portal服务重新编译后重新自动部署后访问地址：http://localhost:8080/cloud/goodsHystrix,响应如下：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+//      因为在消费者portal中goodsHystrix中抛异常RuntimeException，所以服务降级了；服务降级了是可以在fallback()中拿到相关的异常信息的，fallback()打印如下："fallback: 服务异常了。"
+//      Throwable是异常类当中的父类，处于最上层的父类
+//      我觉得笔记做得太细了。很浪费时间，做笔记自己可以看懂就好了，可是不细怕自己又看不懂卧槽
+//      下面这是portal消费者方发生异常时通过fallback拿到了异常信息，下面再进行测试远程服务发生异常，将portal服务goodsHystrix的抛异常代码注释掉，测试远程服务如果发生异常，即在远程服务goods9100、goods9200的goods()方法当中抛出异常即可，再通过fallback的Throwable再去拿取远程服务的异常信息
+//        String str = null;
+//        if(str == null){
+//            throw new RuntimeException("服务异常了。");
+//        }
+
+
 
 //        System.out.println("==============goodsHystrix feign声明式远程调用服务开始==================");
         return goodsRemoteClient.goods();
@@ -352,9 +432,65 @@ public class GoodsController {
      * 以上就是使用hystrix 默认的实现方式。
      *
      * 降级方法，也就是备用的方法。当远程服务不可用、远程服务超时、远程服务异常的时候，服务降级被触发，到时候就会直接调用fallback()方法返回给前端默认的数据。
+     *
+     *
      * @return
      */
-    public ResultObject fallback(){
+//    public ResultObject fallback(){
+    public ResultObject fallback(Throwable throwable){ //在fallback()方法中添加方法参数Throwable throwable这样就可拿到异常的相关信息，即异常的类型等
+        /*
+        Spring Cloud hystrix异常处理，在@HystrixCommand的配置项fallbackMethod="fallback"，即fallback()方法中添加方法参数即Throwable throwable
+        * 这里可以对异常信息做出一些处理
+        * 以下就是对异常信息的打印，即获取得到异常，并可以针对该异常做相关处理。
+        * 即如果远程服务抛出异常或者是消费者自己抛出了异常，都是可以拿到异常的相关信息的。
+        * 当下进行测试比如说在客户端portal controller 的goodsHystrix()方法当中抛出运行时异常，也就是第二点取消注释
+        * */
+        throwable.printStackTrace();//对异常的打印 即打印如下
+        /*
+        java.lang.RuntimeException: 服务异常了。
+                at com.bjpowernode.springcloud.controller.GoodsController.goodsHystrix(GoodsController.java:340)
+                at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+                at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+                at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+                at java.lang.reflect.Method.invoke(Method.java:498)
+                at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.execute(MethodExecutionAction.java:116)
+                at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.executeWithArgs(MethodExecutionAction.java:93)
+                at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.execute(MethodExecutionAction.java:78)
+                at com.netflix.hystrix.contrib.javanica.command.GenericCommand$1.execute(GenericCommand.java:48)
+                at com.netflix.hystrix.contrib.javanica.command.AbstractHystrixCommand.process(AbstractHystrixCommand.java:145)
+                at com.netflix.hystrix.contrib.javanica.command.GenericCommand.run(GenericCommand.java:45)
+                at com.netflix.hystrix.HystrixCommand$2.call(HystrixCommand.java:302)
+                at com.netflix.hystrix.HystrixCommand$2.call(HystrixCommand.java:298)
+                at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:46)
+                at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:35)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+                at rx.Observable.unsafeSubscribe(Observable.java:10327)
+                at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:51)
+                at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:35)
+                at rx.Observable.unsafeSubscribe(Observable.java:10327)
+                at rx.internal.operators.OnSubscribeDoOnEach.call(OnSubscribeDoOnEach.java:41)
+                at rx.internal.operators.OnSubscribeDoOnEach.call(OnSubscribeDoOnEach.java:30)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+                at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+                at rx.Observable.unsafeSubscribe(Observable.java:10327)
+                at rx.internal.operators.OperatorSubscribeOn$SubscribeOnSubscriber.call(OperatorSubscribeOn.java:100)
+                at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction$1.call(HystrixContexSchedulerAction.java:56)
+                at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction$1.call(HystrixContexSchedulerAction.java:47)
+                at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction.call(HystrixContexSchedulerAction.java:69)
+                at rx.internal.schedulers.ScheduledAction.run(ScheduledAction.java:55)
+                at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+                at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+                at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+                at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+                at java.lang.Thread.run(Thread.java:748)
+        */
+        System.out.println("fallback: "+throwable.getMessage());//对message相关信息做打印，打印异常信息，即将throw new RuntimeException("message")中的message进行了打印："fallback: 服务异常了。"
+
         return new ResultObject(Constant.ONE, "服务降级了");//响应码为0表示响应正常，响应码为1表示响应是不正常的
     }
 
@@ -417,5 +553,231 @@ public class GoodsController {
     * 404是代表路径找不到。
     * 以上就是测试的 Hystrix的服务降级
     * */
+
+
+    /**
+     * 查询所有商品
+     * @HystrixCommand注解当中有多个配置项可以进行配置，配置项直接通过逗号进行分隔开来
+     * @HystrixCommand注解当中threadPoolProperties配置项是一个数组，当中可以使用{}花括号配置多个属性。
+     threadPoolKey  给线程池一个key,唯一的key,相当于是一个名字具体含义可以该配置项当中的说明点进去即可
+                    the thread-pool key is used to represent a HystrixThreadPool for monitoring , metrics  publishing , caching  and other  such uses.
+                    线程池的这个key用于去表达代表一个Hystrix线程池为监控去使用的，发送、caching以及别的一些用途；可以将threadPoolKey认为是一个标记，名字的一个标记
+                    represent：代表 | monitoring：监控 | HystrixThreadPool hystrix线程池 | publishing 发送 | other such uses 别的使用
+                    可以认为是一个标记，一个名字
+
+    threadPoolProperties 即线程池的一些属性，是一个数组，
+                    //Specifies thread pool properties 指定线程池的一些属性；
+                    HystrixProperty[] threadPoolProperties() default{};
+                    该属性是一个数组，该数组取值本身也是一个注解，用注解去表明的，即public @interface HystrixProperty{ String name(); //property name @return name  String value();//property value @return value}
+                    所以threadPoolProperties该配置项当中也是通过注解去写@HystrixProperty，有name、value和值
+                    @HystrixProperty  name=coreSize  value=2 核心线程数大小为2，为了测试，因为写多的话手没有那么快测试不了效果在实际项目开发的时候可以将该取值写大一点，这里是为了测试效果所以写两个
+                    @HystrixProperty name=maxQueueSize value=1 最大队列大小，大小为1，含义是 同时发送了三个请求，那么它是可以处理的，发送第四个的时候就无法处理了，coreSize即核心线程数本来有两个两个线程可以进行处理，然后另外有一个队列，这个队列即maxQueueSize，这个队列当中又可以放一份，那么这样的话三个请求分别被放在了coreSize两个线程，以及maxQueueSize一个队列上
+                    即同时有三个请求过来，这三个请求会分别落在coreSize 线程1 线层2 以及一个 maxQueueSize队列上。此时不会进行限流；
+                    但是当发送第四个请求过来的时候，这个时候就会触发hystrix的限流，因为这个时候前面三个请求都分别落在了thread1、thread2、queue队列上，前面三个都还没有处理完成，即没有腾出thread1、thread2、queue中的某一个出来。
+                    queue队列当中已经放满了，只能放置一个请求。
+                    那么此时再来第四个请求的时候，就放不下了。线程coreSize 两个线程又没有空闲下来的。queue队列当中最多又只能放一个，所以此时就会触发hystrix的限流。
+                    限制第四个请求进来的时候提示限流了。基于这个原理。
+                    所以等会儿刷新，刷新到第四次的时候就会发现请求不了了。前面三个请求是可以请求的
+                    此时可以进行测试。重新启动portal服务后测试访问地址：http://localhost:8080/cloud/goodsLimit  该请求地址连续刷新四次即可。快速刷新四次就会触发限流
+                    http://localhost:8080/cloud/goodsLimit
+                    此时刷新第一遍的响应结果如下：{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}
+                    这个时候两秒是可以拿到结果的，然后反复快速刷新几次就会发生限流。即按住f5 连续按4下不要停下，那么第四下后停下就会看到浏览器响应如下：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+                    第四遍限流了。内部没有线程数可用了，队列也被放满了。直接会返回限流，即服务降级的内容。
+                    第四次刷新的时候没有线程数可以用了。因为每一次请求线程都要走两秒才会响应给前端，即远程服务当中有做超时两秒的操作，所以会要等待两秒，而我们快速刷新4次的时候是并没有等待这个每个请求的两秒时间的，所以就好像是一次性可以容纳有3个请求进去，如果不等待两秒的话，里面最多可以执行三个请求，即coreSize和maxQueueSize。
+                    也就是说类似于 并发数是3，那么超过了这个数值的话，就会返回限流，走服务降级。前面三个请求都没有等待两秒的响应就快速刷新过去了被放到了线程1线程2和队列中。
+                    因为每一个线程要走两秒才会走完，而maxQueueSize只是一个可用空间，该队列当中只可以放一个请求。即总共可以有三次请求，在刷新第四次的时候就不行了。
+                    即就是在两秒内刷新四次那么这个时候就会触发hystrix的限流从而服务降级
+
+                    threadPoolKey是一个标识，hystrix通过这个标识来进行累计计数的，看线程是否超过了，如果线程超过了这个大小，超过了就会直接进行降级即在第四次的时候降级了。
+                    通过线程数来进行限流。
+
+     * 请求方法为：/cloud/goodsLimit
+     * @return
+     */
+    @HystrixCommand(
+            fallbackMethod = "fallback",
+//            commandProperties = {
+//                    @HystrixProperty(name = "execution.timeout.enabled", value = "true"),
+//                    @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "5000")
+//            },
+            //@HystrixCommand注解配置限流的配置项参数threadPoolKey、threadPoolProperties；在@HystrixCommand注解当中每一个配置项都通过英文逗号进行隔开
+            //@HystrixCommand当中的配置项threadPoolProperties该参数取值是一个数组所以用花括号{}，数组当中的取值类型为@HystrixProperty也是一个注解的形式
+            //threadPoolKey相当于给线程池一个key，即相当于给它唯一的一个key，相当于一个名字，具体含义可以点击进去看一下它的说明
+            //threadPoolProperties 线程池的一些属性，是一个数组
+            threadPoolKey = "goods",
+            threadPoolProperties = {
+                    @HystrixProperty(name = "coreSize", value = "2"),
+                    @HystrixProperty(name = "maxQueueSize", value = "1")
+            })
+    @RequestMapping("/cloud/goodsLimit")
+    public ResultObject goodsLimit(){
+        //调用远程的一个controller，restful的调用
+        ResponseEntity<ResultObject> responseEntity = restTemplate.getForEntity(GOODS_SERVICE_URL_02, ResultObject.class);
+
+        return responseEntity.getBody();
+
+    }
+
+
+    /**
+     * 查询所有商品
+     * 当前不再需要@HystrixCommand注解了，因为hystrix.command.default.exuecution.isolation.thread.timeoutInMilliseconds已经写在了配置文件当中进行配置了；
+     * 而fallbackMethod现在是测试的是通过feign进行整合hystrix，即在feign声明式接口当中配置好了fallback的相关类，GoodsRemoteClientFallBack类当中实现GoodsRemoteClient接口当中的goods()方法
+     * 通过feign的方式进行触发hystrix的服务降级，@FeignClient注解配置了fallback为GoodsRemoteClientFallBack类
+     *
+     * 最主要是看goodsRemoteClient feign调用接口，该接口会去调用远程方法的goods()，如果远程方法出现有问题，那么goodsRemoteClient会不会走服务降级，如果走了服务降级即将会走GoodsRemoteClientFallBack类当中的goods()方法
+     * 即将打印日志"feign 服务调用降级"
+     * 将消费者portal重新编译并启动 测试访问地址：http://localhost:8080/cloud/goodsFeignHystrix 响应如下：{"statusCode":0,"statusMessage":"查询成功","data":[{"id":1,"name":"商品1","price":67.0,"store":12},{"id":2,"name":"商品2","price":168.0,"store":1},{"id":3,"name":"商品3","price":25.0,"store":50}]}
+     * 响应结果数据正确。但是和需要测试出来的结果是有问题的
+     *
+     * hystrix默认超时时间是1秒钟，此时要测试的是远程服务调用方法需要两秒钟，feign调用方法超时导致触发服务降级，即调用GoodsRemoteClientFallBack类当中的goods()服务降级方法
+     * 即将portal服务当中的application.properties文件中的ribbon.ReadTimeout 以及 hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds配置项进行注释，注释完成之后重新编译portal服务并重新启动
+     * 注释之后hystrix当前默认的超时时间为1秒钟，而调用远程方法需要两秒钟，此时测试的是看是否因为feign调用远程服务超时从而触发hystrix服务降级从而调用配置在注解@FeignClient注解当中的配置项fallback GoodsRemoteClientFallBack类当中的goods()服务降级方法
+     * 再次访问测试地址：http://localhost:8080/cloud/goodsFeignHystrix 此时浏览器页面响应如下：
+     * Whitelabel Error Page
+     * This application has no explicit mapping for /error, so you are seeing this as a fallback.
+     *
+     * Thu May 27 08:53:51 CST 2021
+     * There was an unexpected error (type=Internal Server Error, status=500).
+     * Read timed out executing GET http://34-SPRINGCLOUD-SERVICE-GOODS/service/goods
+     * feign.RetryableException: Read timed out executing GET http://34-SPRINGCLOUD-SERVICE-GOODS/service/goods
+     * 	at feign.FeignException.errorExecuting(FeignException.java:132)
+     * 	at feign.SynchronousMethodHandler.executeAndDecode(SynchronousMethodHandler.java:113)
+     * 	at feign.SynchronousMethodHandler.invoke(SynchronousMethodHandler.java:78)
+     * 	at feign.ReflectiveFeign$FeignInvocationHandler.invoke(ReflectiveFeign.java:103)
+     * 	at com.sun.proxy.$Proxy135.goods(Unknown Source)
+     * 	at com.bjpowernode.springcloud.controller.GoodsController.goodsFeignHystrix(GoodsController.java:641)
+     * 	at com.bjpowernode.springcloud.controller.GoodsController$$FastClassBySpringCGLIB$$728203a2.invoke(<generated>)
+     * 	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+     * 	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:750)
+     * 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+     * 	at org.springframework.aop.interceptor.ExposeInvocationInterceptor.invoke(ExposeInvocationInterceptor.java:93)
+     * 	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+     * 	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:689)
+     * 	at com.bjpowernode.springcloud.controller.GoodsController$$EnhancerBySpringCGLIB$$b89ae6eb.goodsFeignHystrix(<generated>)
+     * 	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+     * 	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+     * 	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+     * 	at java.lang.reflect.Method.invoke(Method.java:498)
+     * 	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:190)
+     * 	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:138)
+     * 	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:105)
+     * 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:893)
+     * 	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:798)
+     * 	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+     * 	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1040)
+     * 	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:943)
+     * 	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1006)
+     * 	at org.springframework.web.servlet.FrameworkServlet.doGet(FrameworkServlet.java:898)
+     * 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:634)
+     * 	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:883)
+     * 	at javax.servlet.http.HttpServlet.service(HttpServlet.java:741)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:231)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+     * 	at org.apache.tomcat.websocket.server.WsFilter.doFilter(WsFilter.java:53)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+     * 	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+     * 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+     * 	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+     * 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+     * 	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:94)
+     * 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+     * 	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+     * 	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:119)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+     * 	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+     * 	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
+     * 	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+     * 	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
+     * 	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
+     * 	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
+     * 	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
+     * 	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
+     * 	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
+     * 	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+     * 	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
+     * 	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1589)
+     * 	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+     * 	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+     * 	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+     * 	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+     * 	at java.lang.Thread.run(Thread.java:748)
+     * Caused by: java.net.SocketTimeoutException: Read timed out
+     * 	at java.net.SocketInputStream.socketRead0(Native Method)
+     * 	at java.net.SocketInputStream.socketRead(SocketInputStream.java:116)
+     * 	at java.net.SocketInputStream.read(SocketInputStream.java:171)
+     * 	at java.net.SocketInputStream.read(SocketInputStream.java:141)
+     * 	at java.io.BufferedInputStream.fill(BufferedInputStream.java:246)
+     * 	at java.io.BufferedInputStream.read1(BufferedInputStream.java:286)
+     * 	at java.io.BufferedInputStream.read(BufferedInputStream.java:345)
+     * 	at sun.net.www.http.HttpClient.parseHTTPHeader(HttpClient.java:735)
+     * 	at sun.net.www.http.HttpClient.parseHTTP(HttpClient.java:678)
+     * 	at sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1587)
+     * 	at sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1492)
+     * 	at java.net.HttpURLConnection.getResponseCode(HttpURLConnection.java:480)
+     * 	at feign.Client$Default.convertResponse(Client.java:143)
+     * 	at feign.Client$Default.execute(Client.java:68)
+     * 	at org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer.execute(FeignLoadBalancer.java:93)
+     * 	at org.springframework.cloud.openfeign.ribbon.FeignLoadBalancer.execute(FeignLoadBalancer.java:56)
+     * 	at com.netflix.client.AbstractLoadBalancerAwareClient$1.call(AbstractLoadBalancerAwareClient.java:104)
+     * 	at com.netflix.loadbalancer.reactive.LoadBalancerCommand$3$1.call(LoadBalancerCommand.java:303)
+     * 	at com.netflix.loadbalancer.reactive.LoadBalancerCommand$3$1.call(LoadBalancerCommand.java:287)
+     * 	at rx.internal.util.ScalarSynchronousObservable$3.call(ScalarSynchronousObservable.java:231)
+     * 	at rx.internal.util.ScalarSynchronousObservable$3.call(ScalarSynchronousObservable.java:228)
+     * 	at rx.Observable.unsafeSubscribe(Observable.java:10327)
+     * 	at rx.internal.operators.OnSubscribeConcatMap$ConcatMapSubscriber.drain(OnSubscribeConcatMap.java:286)
+     * 	at rx.internal.operators.OnSubscribeConcatMap$ConcatMapSubscriber.onNext(OnSubscribeConcatMap.java:144)
+     * 	at com.netflix.loadbalancer.reactive.LoadBalancerCommand$1.call(LoadBalancerCommand.java:185)
+     * 	at com.netflix.loadbalancer.reactive.LoadBalancerCommand$1.call(LoadBalancerCommand.java:180)
+     * 	at rx.Observable.unsafeSubscribe(Observable.java:10327)
+     * 	at rx.internal.operators.OnSubscribeConcatMap.call(OnSubscribeConcatMap.java:94)
+     * 	at rx.internal.operators.OnSubscribeConcatMap.call(OnSubscribeConcatMap.java:42)
+     * 	at rx.Observable.unsafeSubscribe(Observable.java:10327)
+     * 	at rx.internal.operators.OperatorRetryWithPredicate$SourceSubscriber$1.call(OperatorRetryWithPredicate.java:127)
+     * 	at rx.internal.schedulers.TrampolineScheduler$InnerCurrentThreadScheduler.enqueue(TrampolineScheduler.java:73)
+     * 	at rx.internal.schedulers.TrampolineScheduler$InnerCurrentThreadScheduler.schedule(TrampolineScheduler.java:52)
+     * 	at rx.internal.operators.OperatorRetryWithPredicate$SourceSubscriber.onNext(OperatorRetryWithPredicate.java:79)
+     * 	at rx.internal.operators.OperatorRetryWithPredicate$SourceSubscriber.onNext(OperatorRetryWithPredicate.java:45)
+     * 	at rx.internal.util.ScalarSynchronousObservable$WeakSingleProducer.request(ScalarSynchronousObservable.java:276)
+     * 	at rx.Subscriber.setProducer(Subscriber.java:209)
+     * 	at rx.internal.util.ScalarSynchronousObservable$JustOnSubscribe.call(ScalarSynchronousObservable.java:138)
+     * 	at rx.internal.util.ScalarSynchronousObservable$JustOnSubscribe.call(ScalarSynchronousObservable.java:129)
+     * 	at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+     * 	at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+     * 	at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+     * 	at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+     * 	at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+     * 	at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+     * 	at rx.Observable.subscribe(Observable.java:10423)
+     * 	at rx.Observable.subscribe(Observable.java:10390)
+     * 	at rx.observables.BlockingObservable.blockForSingle(BlockingObservable.java:443)
+     * 	at rx.observables.BlockingObservable.single(BlockingObservable.java:340)
+     * 	at com.netflix.client.AbstractLoadBalancerAwareClient.executeWithLoadBalancer(AbstractLoadBalancerAwareClient.java:112)
+     * 	at org.springframework.cloud.openfeign.ribbon.LoadBalancerFeignClient.execute(LoadBalancerFeignClient.java:83)
+     * 	at feign.SynchronousMethodHandler.executeAndDecode(SynchronousMethodHandler.java:108)
+     * 	... 66 more
+     *
+     * 	发现抛出了一个异常，该异常和访问超时有关：Caused by: java.net.SocketTimeoutException: Read timed out
+     * 	此时仍然没有使用到feign @FeignClient注解配置项fallback，即调用到GoodsRemoteClientFallBack类当中的fallback方法进行服务降级
+     * 	此时没有触发@FeignClient注解配置的fallback 服务降级
+     *
+     * 	原因如下：feign默认是支持hystrix的，按时在Spring Cloud Dalston 版本之后就默认关闭了，因为不一定业务需求要用得到。所以现在要使用首先得打开它，在属性文件application.properties加上如下配置
+     * 	feign.hystrix.enabled=true
+     * 	所以此时去portal服务的application.properties中去进行配置该配置项
+     * @return
+     */
+    @RequestMapping("/cloud/goodsFeignHystrix")
+    public ResultObject goodsFeignHystrix(){
+        return goodsRemoteClient.goods();
+    }
+
+
 
 }

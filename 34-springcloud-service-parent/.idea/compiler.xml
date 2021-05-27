@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="34-springcloud-service-commons" />
+        <module name="34-springcloud-service-dashboard" />
         <module name="34-springcloud-service-eureka" />
         <module name="34-springcloud-service-goods-9100" />
         <module name="34-springcloud-service-goods-9200" />
@@ -22,6 +23,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="34-springcloud-service-commons" options="-parameters" />
+      <module name="34-springcloud-service-dashboard" options="-parameters" />
       <module name="34-springcloud-service-eureka" options="-parameters" />
       <module name="34-springcloud-service-goods-9100" options="-parameters" />
       <module name="34-springcloud-service-goods-9200" options="-parameters" />

@@ -71,6 +71,28 @@ public class GoodsController {
         }
 
 
+
+        /*
+        测试远程服务抛出异常，从而触发hystrix的服务降级，看是否fallback方法的Throwable能拿到远程服务的异常信息
+        */
+//        String str = null;
+//        if(str == null){
+//            throw new RuntimeException("远程Goods9200服务异常了");
+//        }
+
+
+
+
+
+        /**
+         * 进行测试feign整合hystrix获取远程服务异常信息，所以需要设置远程服务goods9100、9200存在有异常
+         */
+        String str = null;
+        if(str == null){
+            throw new RuntimeException("远程Goods9100服务异常了");
+        }
+
+
         List<Goods> goodsList = goodsService.getAllGoods();
 //        model.addAttribute("goodsList", goodsList);
 //        return "goods";

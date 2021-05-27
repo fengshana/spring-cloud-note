@@ -5,6 +5,25 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /*
+下面学习的是通过feign和hystrix的整合获取异常信息
+即在声明式feign的接口GoodsRemoteClient上的注解@FeignClient中配置项加一个fallbackFactory即fallback工厂。
+即不再是使用fallback该配置项了。
+而该工厂fallbackFactory配置项的取值为一个类。在该类当中去进行实现获取远程服务的异常信息。
+该类即定义名称为 GoodsRemoteClientFallBackFactory.class 放在commons服务相同的package下，即service下
+================================================================================================
+下面学习的是feign和hystrix的整合实现服务降级
+feign的声明即GoodsRemoteClient，GoodsRemoteClient为feign声明式调用远程服务的接口
+在@FeignClient注解当中有一个参数即fallback；Class<?> fallback() default void.class;
+点进去该注解即可看到，即可以通过注解@FeignClient的该配置项Class<?> fallback() default void.class;来指定服务降级
+也就是说不再在portal服务消费者当中的controller当中的接口方法@HystrixCommand注解当中的配置项去进行指定fallbackMethod="fallback"方法这样子的一个方式了；
+而是在feign声明式的接口当中去进行生命，即通过@FeignClient注解的配置项来实现。
+而@FeignClient注解的该配置项Class<?> fallback() default void.class; 是需要一个类，指定一个类，专门作为GoodsRemoteClient的服务降级类。
+即现在创建一个叫做GoodsRemoteClientFallBack.java的类即可
+也就是当服务降级的时候，GoodsRemoteClient接口的抽象方法到时候走服务降级的时候，让hystrix直接走@FeignClient注解当中的配置项fallback -> GoodsRemoteClientFallBack类即可
+GoodsRemoteClientFallBack即服务降级类
+服务降级类的类名可以自己进行指定。
+在同package即service下建立一个GoodsRemoteClientFallBack.java类
+========================================================================================
 梳理一下现在学到注解：@EnableEurekaServer、@EnableEurekaClient、@LoadBalanced、@FeignClient("具体的对应的服务名称spring.application.name不区分大小写")、@EnableFeignClients
 
 * 通过添加@FeignClient注解，那么此时GoodsRemoteClient即为Feign的一个客户端，然后该类当中的goods()即为服务提供者的接口，
@@ -20,7 +39,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 *
 * */
 //@FeignClient("34-springcloud-service-goods")
-@FeignClient("34-SPRINGCLOUD-SERVICE-GOODS")
+//@FeignClient("34-SPRINGCLOUD-SERVICE-GOODS")
+//@FeignClient(value = "34-SPRINGCLOUD-SERVICE-GOODS", fallback = GoodsRemoteClientFallBack.class)
+@FeignClient(value = "34-SPRINGCLOUD-SERVICE-GOODS", fallbackFactory = GoodsRemoteClientFallBackFactory.class)
 public interface GoodsRemoteClient {
 
     /*

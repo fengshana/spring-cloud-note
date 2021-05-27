@@ -74,6 +74,86 @@ public class GoodsController {
         }
 
 
+        /*
+        测试远程服务抛出异常，从而触发hystrix的服务降级，看是否fallback方法的Throwable能拿到远程服务的异常信息
+        远程服务goods集群部署有9100和9200所以9200也需要抛出异常测试
+        然后将9100、9200服务、portal服务rebuild 重新自动部署，即选中 34-springcloud-service-goods-9100 idea左侧的项目名称 ---->IDEA Build ---->Build Module 34-springcloud-service-goods-9100
+        34-springcloud-service-goods-9200 idea左侧的项目名称 ---->IDEA Build ---->Build Module 34-springcloud-service-goods-9200
+        34-springcloud-service-portal idea左侧的项目名称 ---->IDEA Build ---->Build Module 34-springcloud-service-portal
+        如果需要build哪个项目选中它的项目名称再进行build即可,三台服务都会进行重启
+        idea左侧的项目名称 ---->IDEA Build ---->Build Module "需要进行build的项目名称"
+        重启完成之后，再次访问测试接口地址：http://localhost:8080/cloud/goodsHystrix 响应如下：{"statusCode":1,"statusMessage":"服务降级了","data":null}
+        即触发了服务降级
+        portal服务中查看控制台的打印信息如下，消费者打印的信息是这样的 即fallback可以拿取到远程的异常信息，只会提示 500报错；真正的 runtimeException错误信息还是需要到 goods服务的控制台去看
+        但是尽管如此 throwable 是可以拿取到 消费方和远程服务方的异常信息的
+        throwable.printStackTrace(); ----->
+        feign.FeignException$InternalServerError: status 500 reading GoodsRemoteClient#goods()
+            at feign.FeignException.errorStatus(FeignException.java:114)
+            at feign.FeignException.errorStatus(FeignException.java:86)
+            at feign.codec.ErrorDecoder$Default.decode(ErrorDecoder.java:93)
+            at feign.SynchronousMethodHandler.executeAndDecode(SynchronousMethodHandler.java:149)
+            at feign.SynchronousMethodHandler.invoke(SynchronousMethodHandler.java:78)
+            at feign.ReflectiveFeign$FeignInvocationHandler.invoke(ReflectiveFeign.java:103)
+            at com.sun.proxy.$Proxy131.goods(Unknown Source)
+            at com.bjpowernode.springcloud.controller.GoodsController.goodsHystrix(GoodsController.java:348)
+            at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+            at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+            at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+            at java.lang.reflect.Method.invoke(Method.java:498)
+            at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.execute(MethodExecutionAction.java:116)
+            at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.executeWithArgs(MethodExecutionAction.java:93)
+            at com.netflix.hystrix.contrib.javanica.command.MethodExecutionAction.execute(MethodExecutionAction.java:78)
+            at com.netflix.hystrix.contrib.javanica.command.GenericCommand$1.execute(GenericCommand.java:48)
+            at com.netflix.hystrix.contrib.javanica.command.AbstractHystrixCommand.process(AbstractHystrixCommand.java:145)
+            at com.netflix.hystrix.contrib.javanica.command.GenericCommand.run(GenericCommand.java:45)
+            at com.netflix.hystrix.HystrixCommand$2.call(HystrixCommand.java:302)
+            at com.netflix.hystrix.HystrixCommand$2.call(HystrixCommand.java:298)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:46)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:35)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.Observable.unsafeSubscribe(Observable.java:10327)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:51)
+            at rx.internal.operators.OnSubscribeDefer.call(OnSubscribeDefer.java:35)
+            at rx.Observable.unsafeSubscribe(Observable.java:10327)
+            at rx.internal.operators.OnSubscribeDoOnEach.call(OnSubscribeDoOnEach.java:41)
+            at rx.internal.operators.OnSubscribeDoOnEach.call(OnSubscribeDoOnEach.java:30)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:48)
+            at rx.internal.operators.OnSubscribeLift.call(OnSubscribeLift.java:30)
+            at rx.Observable.unsafeSubscribe(Observable.java:10327)
+            at rx.internal.operators.OperatorSubscribeOn$SubscribeOnSubscriber.call(OperatorSubscribeOn.java:100)
+            at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction$1.call(HystrixContexSchedulerAction.java:56)
+            at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction$1.call(HystrixContexSchedulerAction.java:47)
+            at com.netflix.hystrix.strategy.concurrency.HystrixContexSchedulerAction.call(HystrixContexSchedulerAction.java:69)
+            at rx.internal.schedulers.ScheduledAction.run(ScheduledAction.java:55)
+            at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+            at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+            at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+            at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+            at java.lang.Thread.run(Thread.java:748)
+
+        System.out.println(throwable.getMessage()); ---->  fallback: status 500 reading GoodsRemoteClient#goods()
+
+        以上测试fallback中的throwable拿取远程服务方的异常信息就测试完成了
+        */
+//        String str = null;
+//        if(str == null){
+//            throw new RuntimeException("远程Goods9100服务异常了");
+//        }
+
+
+        /**
+         * 进行测试feign整合hystrix获取远程服务异常信息，所以需要设置远程服务goods9100、9200存在有异常
+         */
+        String str = null;
+        if(str == null){
+            throw new RuntimeException("远程Goods9100服务异常了");
+        }
+
         List<Goods> goodsList = goodsService.getAllGoods();
 //        model.addAttribute("goodsList", goodsList);
 //        return "goods";
