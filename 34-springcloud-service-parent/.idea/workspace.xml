@@ -2,12 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b20863ed-846b-47c2-8b0e-ddf0b5dccc4e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClientFallBack.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClientFallBackFactory.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-dashboard/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/java/com/bjpowernode/springcloud/DashboardApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application-eureka8761.properties" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application-eureka8762.properties" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application-eureka8763.properties" beforeDir="false" />
@@ -15,18 +9,7 @@
       <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/com/bjpowernode/springcloud/EurekaApplication.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-portal/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-portal/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/resources/application.properties" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -177,7 +160,7 @@
   <component name="PhpServers">
     <servers />
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-12" />
     <option name="y" value="-12" />
     <option name="width" value="1248" />
@@ -244,9 +227,10 @@
     <property name="RequestMappingsPanelOrder1" value="1" />
     <property name="RequestMappingsPanelWidth0" value="75" />
     <property name="RequestMappingsPanelWidth1" value="75" />
+    <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1622109634751" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1622110562459" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../34-springcloud-service-dashboard/pom.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
@@ -413,8 +397,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Spring Boot.DashboardApplication" />
         <item itemvalue="Spring Boot.PortalApplication" />
+        <item itemvalue="Spring Boot.DashboardApplication" />
         <item itemvalue="Spring Boot.GoodsApplication9200" />
         <item itemvalue="Spring Boot.GoodsApplication9100" />
         <item itemvalue="Spring Boot.EurekaApplication8761" />
@@ -443,12 +427,20 @@
       <workItem from="1621690712454" duration="9948000" />
       <workItem from="1621737425418" duration="8191000" />
       <workItem from="1622030209054" duration="1557000" />
-      <workItem from="1622034949958" duration="25385000" />
+      <workItem from="1622034949958" duration="26911000" />
     </task>
+    <task id="LOCAL-00001" summary="spring cloud组件之hystrix&#10;1. hystrix服务熔断、服务降级、请求限流（@HystrixCommand注解中配置fallbackMethod、threadPoolKey、threadPoolProperties[coreSize、maxQueueSize]、commandProperties[execution.isolation.thread.timeoutInMilliseconds、execution.timeout.enabled]），修改默认超时时间（ribbon.ReadTimeout以及hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds）。&#10;2. feign整合hystrix做服务降级以及调用远程接口异常信息的获取(@FeignClient配置项fallback 取值为实现feign声明式接口的实现类重写goods()方法即为服务降级方法 以及fallbackFactory 配置实现FallBackFactory接口重写create()方法的实现类（返回feign声明式接口实例匿名内部类实现）)。&#10;3. hystrix dashboard的使用进行监控存在有hystrix的项目当中hystrix的运行情况，hystrix dashboard服务添加spring-cloud-starter-netflix-hystrix-dashboard依赖以及修改端口号，消费者端也需要进行配置添加依赖spring-cloud-starter-netflix-hystrix以及spring-boot-starter-actuator依赖以及在配置文件当中配置暴露端口号 management.endpoints.web.exposure.include=hystrix.stream。">
+      <created>1622110261007</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1622110261007</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="151024000" />
+    <option name="totallyTimeSpent" value="152550000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -462,7 +454,7 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="735" extended-state="7" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.20129345" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20129345" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -472,7 +464,7 @@
       <window_info id="Web" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Messages" order="0" weight="0.3283582" />
       <window_info anchor="bottom" id="Message" order="1" />
-      <window_info anchor="bottom" id="Run Dashboard" order="2" sideWeight="0.49717057" visible="true" weight="0.3018242" />
+      <window_info active="true" anchor="bottom" id="Run Dashboard" order="2" sideWeight="0.49717057" visible="true" weight="0.40630183" />
       <window_info anchor="bottom" id="Find" order="3" />
       <window_info anchor="bottom" id="Run" order="4" sideWeight="0.497979" weight="0.30016583" />
       <window_info anchor="bottom" id="Debug" order="5" weight="0.4" />
@@ -490,7 +482,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Maven" order="3" weight="0.33306387" />
+      <window_info anchor="right" id="Maven" order="3" visible="true" weight="0.33306387" />
       <window_info anchor="right" id="Palette" order="4" />
       <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="right" id="Database" order="6" weight="0.32983023" />
@@ -538,6 +530,10 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="spring cloud组件之hystrix&#10;1. hystrix服务熔断、服务降级、请求限流（@HystrixCommand注解中配置fallbackMethod、threadPoolKey、threadPoolProperties[coreSize、maxQueueSize]、commandProperties[execution.isolation.thread.timeoutInMilliseconds、execution.timeout.enabled]），修改默认超时时间（ribbon.ReadTimeout以及hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds）。&#10;2. feign整合hystrix做服务降级以及调用远程接口异常信息的获取(@FeignClient配置项fallback 取值为实现feign声明式接口的实现类重写goods()方法即为服务降级方法 以及fallbackFactory 配置实现FallBackFactory接口重写create()方法的实现类（返回feign声明式接口实例匿名内部类实现）)。&#10;3. hystrix dashboard的使用进行监控存在有hystrix的项目当中hystrix的运行情况，hystrix dashboard服务添加spring-cloud-starter-netflix-hystrix-dashboard依赖以及修改端口号，消费者端也需要进行配置添加依赖spring-cloud-starter-netflix-hystrix以及spring-boot-starter-actuator依赖以及在配置文件当中配置暴露端口号 management.endpoints.web.exposure.include=hystrix.stream。" />
+    <option name="LAST_COMMIT_MESSAGE" value="spring cloud组件之hystrix&#10;1. hystrix服务熔断、服务降级、请求限流（@HystrixCommand注解中配置fallbackMethod、threadPoolKey、threadPoolProperties[coreSize、maxQueueSize]、commandProperties[execution.isolation.thread.timeoutInMilliseconds、execution.timeout.enabled]），修改默认超时时间（ribbon.ReadTimeout以及hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds）。&#10;2. feign整合hystrix做服务降级以及调用远程接口异常信息的获取(@FeignClient配置项fallback 取值为实现feign声明式接口的实现类重写goods()方法即为服务降级方法 以及fallbackFactory 配置实现FallBackFactory接口重写create()方法的实现类（返回feign声明式接口实例匿名内部类实现）)。&#10;3. hystrix dashboard的使用进行监控存在有hystrix的项目当中hystrix的运行情况，hystrix dashboard服务添加spring-cloud-starter-netflix-hystrix-dashboard依赖以及修改端口号，消费者端也需要进行配置添加依赖spring-cloud-starter-netflix-hystrix以及spring-boot-starter-actuator依赖以及在配置文件当中配置暴露端口号 management.endpoints.web.exposure.include=hystrix.stream。" />
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
