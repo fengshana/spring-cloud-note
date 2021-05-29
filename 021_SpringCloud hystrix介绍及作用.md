@@ -904,7 +904,242 @@ hystrix相关配置，当中有很多大量的配置。
 
 
 
+以上涉及到的测试地址有：
+
+```bash
+#访问hystrix dashboard仪表盘后台管理地址页面
+http://localhost:3721/hystrix
+
+http://localhost:3721/hystrix/monitor?stream=http%3A%2F%2Flocalhost%3A8080%2Factuator%2Fhystrix.stream
+
+#消费者端路径（访问之前需要访问某一个消费者端的接口，否则出现ping:......，如果访问了则出现一大堆的json数据）
+http://localhost:8080/actuator/hystrix.stream
+
+#消费者访问测试地址
+http://localhost:8080/cloud/goodsRibbon
+
+#消费者访问测试地址
+http://localhost:8080/cloud/goodsHystrix
+
+#消费者访问测试地址
+http://localhost:8080/cloud/goodsFeignHystrix
+```
+
+
+
+
+
 ## 032_Spring Cloud Hystrix turbine服务构建
+
+继续在已有的基础之上讲解微服务专题-一站式微服务架构SpringCloud
+
+### 1、快速回顾
+
+1. 分布式与微服务架构的理论梳理；（软件发展的过程，架构的发展历程做了一个梳理）
+2. 什么是SpringCloud？（SpringCloud是微服务一站式的解决方案，SpringCloud由很多很多的组件构成）
+3. Spring Cloud的整体架构（与Dubbo比较）（SpringCloud的整体架构可以和Dubbo做一个比较，和Dubbo的架构非常相似，是分布式微服务的一个解决方案，有三个部分，有提供者、消费者以及注册中心，核心在这三个部分）
+4. 服务消费者Controller直连调用服务提供者Controller（http协议的resultful）（SpringCloud当中的调用是controller调用controller，基于http协议的restful这种调用，此处也可以进行与dubbo进行比较，dubbo是基于dubbo协议，基于rpc的远程调用，它们之间调用方式不一样，走的协议，协议也不一样）
+5. Spring Cloud的注册中心Eureka（SpringCloud当中注册中心使用Eureka，那么在Dubbo当中注册中心主要使用Zookeeper）
+6. Spring Cloud Eureka与Zookeeper比较（Eureka和Zookeeper这两个注册中心它们的关注点不一样，Eureka保证可用性以及分区容错性即AP，Zookeeper保证一致性以及分区容错性即CP）
+7. Spring Cloud Eureka高可用集群（做三个节点或者多个节点，保证注册中心的高可用，在dubbo当中也是一样，zookeeper也会做一个集群，做多个节点，即集群）
+8. Spring Cloud Eureka自我保护机制（避免服务因为网络分区而导致服务没有向注册中心发送心跳，那么此时自我保护机制可以将该服务保护起来，避免误杀某些服务，其实某些服务没有宕机，eureka如果没有自我保护机制的话会误认为某些服务宕机了，那么这样的话就会影响服务之间的调用，eureka比较关注可用性，不是关注一致性）
+9. Spring Cloud Ribbon负载均衡（在调用的时候有一个ribbon实现负载均衡的调用，也是一个组件，是netflix公司提供的组件进行负载均衡调用）
+10. Spring Cloud Feign声明式服务调用（与Dubbo接口层比较）（然后就是Feign该组件，也是netflix公司提供的，它是一种声明式的服务调用，可以调用远程的服务，写一个接口即可，与dubbo当中的接口层可以做一个比较，有点类似dubbo当中开发的时候写的一个接口层，Feign该组件也是netflix公司提供的）
+11. Spring Cloud Hystrix服务熔断降级、服务限流（hystrix该组件也是netflix公司提供的，spring cloud对hystrix做了一个封装，做了一个starter，然后它可以实现熔断降级、服务限流，可以实现这些功能，在微服务开发的时候可能就需要用到）
+12. Spring Cloud Hystrix DashBoard仪表盘监控（hystrix有一个仪表盘监控即dashboard，可以将该服务部署一下，该服务不进行部署也不影响，因为dashboard主要就是一个监控的功能，有点类似于springboot当中的actuator，是用于监控的）
+
+### 2、Spring Cloud Hystrix Turbine
+
+在仪表盘hystrix DashBoard的基础上介绍hystrix turbine。
+
+Hystrix DashBoard前面已经知道了，它的主要功能是可以对某一项 微服务进行监控，但真是情况下，不可能只对一个微服务进行监控，我们有很多微服务，所以我们需要对很多微服务进行监控，这个时候就需要使用到 turbine 
+
+单个hystrix服务的监控：
+
+![image-20210527213117802](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210527213117802.png)
+
+在右边的这个地方是hystrix dashboard，即部署了一个服务，hystrix dashboard，它用来监控/hystrix.stream这个地址，这个接口地址，而这个接口地址是通过有一个服务，从这个服务当中获取的，那么这个服务需要做一些相关的配置，然后到时候就可以暴露出这么一个接口地址/hystrix.stream接口。然后hystrix dashboard服务就通过这个接口来对这个服务的监控。
+
+而这个服务有可能调用另外的服务eureka client1、eureka client2这种，这些服务都可能会被注册到注册中心eureka server上
+
+那么以上是hystrix dashboard对单个服务的监控，dashboard监控eureka-consumer-ribbon-hystrix该服务。
+
+那么如果当hystrix服务有很多个的时候，那么此时就不一样了，看下图：
+
+多个hystrix服务的监控：
+
+![image-20210527213606505](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210527213606505.png)
+
+比如说，现在有多个hystrix服务（即eureka-consumer-ribbon-hystrix服务），该图当中即画了两个hystrix服务，eureka-consumer-ribbbon-hystrix（上）为用到了hystrix的服务，eureka-consumer-ribbon-hystrix（下）也是使用到了hystrix的服务，最右边是dashboard服务，然后这个时候dashboard怎么去监控那两台使用到了hystrix的服务呢？
+
+hystrix dashboard通过Turbine，hystrix dashboard监控Turbine即可，然后Turbine就会去聚合eureka-consumer-ribbon-hystrix（上）和eureka-consumer-ribbon-hystrix（下），即eureka-consumer-ribbon-hystrix（上）和eureka-consumer-ribbon-hystrix（下）到时候就会在Turbine处做一个汇总，汇总一下，汇总到Turbine，而hystrix DashBoard就通过Turbine的接口/turbine.stream这个接口来进行监控那两个使用了hystrix的服务。那么hystrix dashboard在监控的时候即eureka-consumer-ribbon-hystrix（上）和eureka-consumer-ribbon-hystrix（下）这两个服务的信息就都有了。
+
+eureka-consumer-ribbon-hystrix（上）和eureka-consumer-ribbon-hystrix（下）通过Turbine做一下聚合，然后展示到hystrix dashboard当中。
+
+hystrix dashboard就是一个页面，该页面上即有一个图形的展示。展示该项目当中hystrix服务运行的状态，主要是hystrix的运行状态。
+
+所以多个服务的时候，hystrix dashboard需要进行监控则通过Turbine来做聚合，就相当于汇合一下汇总一下，汇总之后就可以了，进行监控服务。
+
+搭建一下turbine并使用它做聚合。
+
+微服务开发，像turbine这个地方就是一个服务，就需要为turbine该服务搭建一个模块。即准备一个模块专门做turbine服务的。（该启动的东西都启动一下linux当中的高可用eureka集群、mysql服务、idea，都启动之后进行搭建turbine服务，要准备一个微服务，turbine该服务也是使用springboot进行开发的，所以在这边直接IDEA----->File-------->Module....--------->Spring Initializr------->）
+
+具体步骤：
+
+首先准备一个turbine模块
+
+1、创建一个34-springcloud-service-turbine项目，该项目依然是一个springboot项目；
+
+![image-20210527215014067](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210527215014067.png)
+
+![image-20210527215045606](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210527215045606.png)
+
+![image-20210527215128334](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210527215128334.png)
+
+所以在学习spring cloud之前需要学习spring boot。
+
+由于老师那边通过spring initializr创建失败了，这边和他同步。
+
+即可以通过本地磁盘直接拷贝一份项目，直接改一改即可。
+
+即idea当中点击任意一个项目右击选择`Show in Explorer`打开该项目所在的磁盘工作空间。
+
+![image-20210527215401004](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210527215401004.png)
+
+将portal服务直接复制粘贴一份类似于dashboard服务一样处理。文件夹命名为`34-springcloud-service-turbine`
+
+进入到turbine服务文件夹下，删除target不需要的文件。然后双击pom.xml文件进行修改内容如下：
+
+```xml
+<artifactId>34-springcloud-service-turbine</artifactId>
+
+<name>34-springcloud-service-turbine</name>
+    <description>34-springcloud-service-turbine project for Spring Boot</description>
+
+```
+
+修改一下名称即可。将portal替换成turbine即可。然后通过idea导入该turbine服务。 idea----->File-------->New--------->Module from Existing Sources.....--------->刷新后选择中turbine服务的pom.xml双击或者单击之后选择OK--------->Next------>Finish
+
+此时还需要在parent服务当中的pom.xml当中的modules节点当中添加节点如下：
+
+```xml
+<modules>
+	<!--.......-->
+    <module>../34-springcloud-service-turbine</module>
+</modules>
+```
+
+修改turbine服务当中的PortalApplication为TurbineApplication。
+
+
+
+2、添加依赖(即添加turbine的依赖 spring-cloud-starter-netflix-turbine，该依赖前缀又是spring-cloud-starter 一个启动器，spring cloud帮助开发者将turbine做了一个包装，turbine也是netflix公司提供的，所以spring cloud官方那一套微服务解决方案在国内称之为spring cloud netflix，另外还有一套称作spring cloud alibaba，因为spring cloud alibaba这一套是从alibaba出来的，目前学习使用的组件都是spring cloud netflix这一套，是netflix公司的相关产品，springcloud做了一个整合即制作spring-cloud-starter启动器)：
+
+```xml
+<!--spring-cloud-starter-netflix-turbine-->
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-turbine</artifactId>
+</dependency>
+```
+
+
+
+3、配置文件
+
+```properties
+server.port=3722
+
+eureka.client.register-with-eureka=false
+#eureka注册中心的连接地址
+eureka.client.service-url.defaultZone=http://192.168.177.128:8761/eureka,http://192.168.177.128:8762/eureka,http://192.168.177.128:8763/eureka
+
+#配置turbine
+turbine.app-config=34-SPRINGCLOUD-SERVICE-PORTAL,34-SPRINGCLOUD-SERVICE-HYSTRIX
+turbine.cluster-name-expression="default"
+
+
+
+```
+
+4、在main方法的入口类上添加注解：
+
+```java
+@EnableTurbine //开启turbine
+@SpringBootApplication
+public class TurbineApplication{
+    public static void main(String[] args){
+        SpringApplication.run(TurbineApplication.class, args);
+    }
+}
+```
+
+将portal拷贝过来的config、controller不需要就可以进行删除。
+
+拷贝过来的pom.xml当中多余的依赖也可以进行删除（除了spring-cloud-starter-netflix-turbine这一个其余都进行删除）。
+
+接下来为了能对多个使用了hystrix的项目进行监控，我们再准备一份项目，并且里面使用了hystrix：34-springcloud-service-portal-2（可以拷贝一份34-springcloud-service-portal项目）
+
+由于目前测试的是turbine要对两份项目进行聚合，所以此时将portal服务再拷贝一份，叫做34-springcloud-service-portal-2，然后再做测试。(删除该文件夹下的target文件夹以及修改pom.xml中的artifactId、name、description)
+
+打开IDEA-->File----->New------->Module from Existing Sources....------>双击34-springcloud-service-portal-2项目的pom.xml文件------->Next------->Finish
+
+再到parent服务的pom.xml中添加module，如下
+
+```xml
+<modules>
+	<!--......-->
+            <module>../34-springcloud-service-portal-2</module>
+</modules>
+```
+
+修改portal-2的入口类名称为PortalApplication2以作区分。以及修改portal-2的配置文件中
+
+```properties
+
+server.port=8081
+
+
+spring.application.name=34-springcloud-service-portal-2
+
+
+eureka.instance.instance-id=34-springcloud-service-portal-2
+
+```
+
+
+
+启动2个服务提供者完成之后，再启动2个消费者。然后启动turbine服务。
+
+最终展示结果需要hystrix dashboard，即还需要启动dashboard服务。
+
+全都启动好了之后就开始测试，测试地址（检查聚合功能有没有实现）：
+
+![image-20210528093015813](C:\Users\ASUS\AppData\Roaming\Typora\typora-user-images\image-20210528093015813.png)
+
+首先进行访问hystrix dashboard服务，(搭建仪表盘的访问地址)即地址：http://localhost:3721/hystrix
+
+通过turbine的聚合到时候在hystrix dashboard仪表盘首页填写的地址即turbine暴露的接口即http://localhost:8080/actuator/hystrix.stream
+
+注意事项在访问turbine的暴露接口之前还需要先进行访问两个hystrix项目的各自任意一个接口，访问了之后，后续才会在hystrix dashboard后台管理页面当中看到数据，否则拿不到数据。所以目前需要把两个hystrix服务访问一下，即portal以及portal-2服务的各自任意一个接口访问一下。 
+
+消费者portal：http://localhost:8080/cloud/goodsLimit 或者 http://localhost:8080/cloud/goodsHystrix 或者 http://localhost:8080/cloud/goodsRibbon 或者 http://localhost:8080/cloud/goodsFeign（该接口虽然没有@HystrixCommand，但是内部是feign声明式接口使用了feign整合hystrix的，即@FeignClient中配置了fallback、fallbackFactory即说明使用有hystrix进行服务降级） （访问的接口地址当中需要带有hystrix的方法，如果没有hystrix则不行，即需要带有hystrix注解的接口，使用hystrix做了服务熔断降级的接口，这样才能够进行聚合，访问其他接口不行，加有@HystrixCommand注解的方法都是具有熔断降级的）
+
+消费者portal-2：http://localhost:8081/cloud/goodsHystrix 或者 http://localhost:8081/cloud/goodsLimit 或者 http://localhost:8081/cloud/goodsRibbon 或者 http://localhost:8081/cloud/goodsFeign
+
+再进行访问消费者即hystrix的两个项目接口地址：http://localhost:8080/hystrix.stream
+
+接着在hystrix dashboard后台管理首页当中输入地址：http://localhost:8080/actuator/hystrix.stream 然后点击Monitor Stream按钮，这表示对portal服务的监控即对8080 服务的监控。
+
+再在hystrix dashboard后台管理首页当中输入地址：http://localhost:8081/actuator/hystrix.stream，然后点击Monitor Stream按钮，这表示是对portal-2服务的监控，即对8081服务的监控。
+
+此时需要做的是对这两个消费者服务进行整体监控，即就是对portal服务以及portal-2服务进行整体监控，那么此时的做法是：
+
+将hystrix dashboard首页(http://localhost:3721/hystrix)当中的地址切换一下即可：
+
+将http://localhost:8080/actuator/hystrix.stream 或者  http://localhost:8081/actuator/hystrix.stream 变成另外一个url，即turbine的地址，即http://localhost:3722/turbine.stream
+
+
 
 
 
