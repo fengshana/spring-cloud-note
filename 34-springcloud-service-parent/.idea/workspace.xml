@@ -2,14 +2,24 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="b20863ed-846b-47c2-8b0e-ddf0b5dccc4e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application-eureka8761.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application-eureka8762.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application-eureka8763.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/application.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/classes/com/bjpowernode/springcloud/EurekaApplication.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-eureka/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-portal-2/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/java/com/bjpowernode/springcloud/PortalApplication2.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/java/com/bjpowernode/springcloud/config/MyRule.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/java/com/bjpowernode/springcloud/config/RestConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/resources/application.properties" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-turbine/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-turbine/src/main/java/com/bjpowernode/springcloud/TurbineApplication.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../34-springcloud-service-turbine/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../34-springcloud-service-portal/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/../34-springcloud-service-portal/target/classes/application.properties" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -24,6 +34,8 @@
     <ignored path="$PROJECT_DIR$/../34-springcloud-service-goods-9200/target/" />
     <ignored path="$PROJECT_DIR$/../34-springcloud-service-goods-9100/target/" />
     <ignored path="$PROJECT_DIR$/../34-springcloud-service-dashboard/target/" />
+    <ignored path="$PROJECT_DIR$/../34-springcloud-service-turbine/target/" />
+    <ignored path="$PROJECT_DIR$/../34-springcloud-service-portal-2/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +96,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/34-springcloud-service-goods/pom.xml" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods/src/main/java/com/bjpowernode/springcloud/mapper/GoodsMapper.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods/src/main/java/com/bjpowernode/springcloud/service/impl/GoodsService.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods/src/main/java/com/bjpowernode/springcloud/service/GoodsService.java" />
@@ -117,21 +128,25 @@
         <option value="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/model/ResultObject.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9100/pom.xml" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9200/pom.xml" />
-        <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties" />
-        <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClientFallBack.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClient.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClientFallBackFactory.java" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-dashboard/pom.xml" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/java/com/bjpowernode/springcloud/PortalApplication.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/java/com/bjpowernode/springcloud/DashboardApplication.java" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-portal/pom.xml" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-turbine/src/main/java/com/bjpowernode/springcloud/TurbineApplication.java" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-turbine/pom.xml" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-portal/src/main/resources/application.properties" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-turbine/src/main/resources/application.properties" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/resources/application.properties" />
       </list>
     </option>
   </component>
@@ -160,7 +175,7 @@
   <component name="PhpServers">
     <servers />
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-12" />
     <option name="y" value="-12" />
     <option name="width" value="1248" />
@@ -178,37 +193,22 @@
           <expand>
             <path>
               <item name="34-springcloud-service-parent" type="b2602c69:ProjectViewProjectNode" />
-              <item name="34-springcloud-service-dashboard" type="462c0819:PsiDirectoryNode" />
+              <item name="34-springcloud-service-turbine" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="34-springcloud-service-parent" type="b2602c69:ProjectViewProjectNode" />
-              <item name="34-springcloud-service-dashboard" type="462c0819:PsiDirectoryNode" />
+              <item name="34-springcloud-service-turbine" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="34-springcloud-service-parent" type="b2602c69:ProjectViewProjectNode" />
-              <item name="34-springcloud-service-dashboard" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="34-springcloud-service-parent" type="b2602c69:ProjectViewProjectNode" />
-              <item name="34-springcloud-service-dashboard" type="462c0819:PsiDirectoryNode" />
+              <item name="34-springcloud-service-turbine" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="34-springcloud-service-parent" type="b2602c69:ProjectViewProjectNode" />
-              <item name="34-springcloud-service-dashboard" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="springcloud" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="34-springcloud-service-parent" type="b2602c69:ProjectViewProjectNode" />
-              <item name="34-springcloud-service-dashboard" type="462c0819:PsiDirectoryNode" />
+              <item name="34-springcloud-service-turbine" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="resources" type="462c0819:PsiDirectoryNode" />
@@ -230,15 +230,15 @@
     <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1622110562459" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1622294936997" />
     <property name="jdk.selected.JAVA_MODULE" value="1.8" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../34-springcloud-service-dashboard/pom.xml" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../34-springcloud-service-portal-2/pom.xml" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="npm" />
     <property name="project.structure.last.edited" value="Modules" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="settings.editor.selected.configurable" value="reference.settingsdialog.project.gradle" />
   </component>
   <component name="RecentsManager">
@@ -272,7 +272,7 @@
     </option>
     <option name="contentProportion" value="0.3267163" />
   </component>
-  <component name="RunManager" selected="Spring Boot.DashboardApplication">
+  <component name="RunManager" selected="Spring Boot.TurbineApplication">
     <configuration name="DashboardApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
       <module name="34-springcloud-service-dashboard" />
       <extension name="coverage">
@@ -296,21 +296,6 @@
         </pattern>
       </extension>
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjpowernode.springcloud.EurekaApplication" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="EurekaApplication8761" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
-      <module name="34-springcloud-service-eureka" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.bjpowernode.springcloud.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjpowernode.springcloud.EurekaApplication" />
-      <option name="PROGRAM_PARAMETERS" value="--spring.profiles.active=eureka8761" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -346,19 +331,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="GoodsApplication9100" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
-      <module name="34-springcloud-service-goods-9100" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.bjpowernode.springcloud.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjpowernode.springcloud.GoodsApplication9100" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="GoodsApplication9200" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
       <module name="34-springcloud-service-goods-9200" />
       <extension name="coverage">
@@ -385,23 +357,50 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="PortalApplication2" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true">
+      <module name="34-springcloud-service-portal-2" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bjpowernode.springcloud.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjpowernode.springcloud.PortalApplication2" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TurbineApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
+      <module name="34-springcloud-service-turbine" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="com.bjpowernode.springcloud.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.bjpowernode.springcloud.TurbineApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
       <item itemvalue="Spring Boot.EurekaApplication8762" />
       <item itemvalue="Spring Boot.EurekaApplication8763" />
       <item itemvalue="Spring Boot.EurekaApplication" />
-      <item itemvalue="Spring Boot.EurekaApplication8761" />
-      <item itemvalue="Spring Boot.GoodsApplication9100" />
-      <item itemvalue="Spring Boot.PortalApplication" />
       <item itemvalue="Spring Boot.GoodsApplication9200" />
+      <item itemvalue="Spring Boot.PortalApplication" />
       <item itemvalue="Spring Boot.DashboardApplication" />
+      <item itemvalue="Spring Boot.TurbineApplication" />
+      <item itemvalue="Spring Boot.PortalApplication2" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Spring Boot.PortalApplication" />
+        <item itemvalue="Spring Boot.TurbineApplication" />
+        <item itemvalue="Spring Boot.PortalApplication2" />
         <item itemvalue="Spring Boot.DashboardApplication" />
+        <item itemvalue="Spring Boot.PortalApplication" />
         <item itemvalue="Spring Boot.GoodsApplication9200" />
-        <item itemvalue="Spring Boot.GoodsApplication9100" />
-        <item itemvalue="Spring Boot.EurekaApplication8761" />
       </list>
     </recent_temporary>
   </component>
@@ -427,7 +426,7 @@
       <workItem from="1621690712454" duration="9948000" />
       <workItem from="1621737425418" duration="8191000" />
       <workItem from="1622030209054" duration="1557000" />
-      <workItem from="1622034949958" duration="26911000" />
+      <workItem from="1622034949958" duration="33711000" />
     </task>
     <task id="LOCAL-00001" summary="spring cloud组件之hystrix&#10;1. hystrix服务熔断、服务降级、请求限流（@HystrixCommand注解中配置fallbackMethod、threadPoolKey、threadPoolProperties[coreSize、maxQueueSize]、commandProperties[execution.isolation.thread.timeoutInMilliseconds、execution.timeout.enabled]），修改默认超时时间（ribbon.ReadTimeout以及hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds）。&#10;2. feign整合hystrix做服务降级以及调用远程接口异常信息的获取(@FeignClient配置项fallback 取值为实现feign声明式接口的实现类重写goods()方法即为服务降级方法 以及fallbackFactory 配置实现FallBackFactory接口重写create()方法的实现类（返回feign声明式接口实例匿名内部类实现）)。&#10;3. hystrix dashboard的使用进行监控存在有hystrix的项目当中hystrix的运行情况，hystrix dashboard服务添加spring-cloud-starter-netflix-hystrix-dashboard依赖以及修改端口号，消费者端也需要进行配置添加依赖spring-cloud-starter-netflix-hystrix以及spring-boot-starter-actuator依赖以及在配置文件当中配置暴露端口号 management.endpoints.web.exposure.include=hystrix.stream。">
       <created>1622110261007</created>
@@ -440,7 +439,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="152550000" />
+    <option name="totallyTimeSpent" value="159350000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -452,9 +451,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1295" height="735" extended-state="7" />
+    <frame x="-7" y="-7" width="1295" height="735" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20129345" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.2497979" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -464,7 +463,7 @@
       <window_info id="Web" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Messages" order="0" weight="0.3283582" />
       <window_info anchor="bottom" id="Message" order="1" />
-      <window_info active="true" anchor="bottom" id="Run Dashboard" order="2" sideWeight="0.49717057" visible="true" weight="0.40630183" />
+      <window_info active="true" anchor="bottom" id="Run Dashboard" order="2" sideWeight="0.49717057" visible="true" weight="0.52238804" />
       <window_info anchor="bottom" id="Find" order="3" />
       <window_info anchor="bottom" id="Run" order="4" sideWeight="0.497979" weight="0.30016583" />
       <window_info anchor="bottom" id="Debug" order="5" weight="0.4" />
@@ -482,7 +481,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="Maven" order="3" visible="true" weight="0.33306387" />
+      <window_info anchor="right" id="Maven" order="3" weight="0.33306387" />
       <window_info anchor="right" id="Palette" order="4" />
       <window_info anchor="right" id="Capture Analysis" order="5" />
       <window_info anchor="right" id="Database" order="6" weight="0.32983023" />
@@ -501,7 +500,7 @@
       <window_info id="Web" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Messages" order="0" weight="0.3283582" />
       <window_info anchor="bottom" id="Message" order="1" />
-      <window_info anchor="bottom" id="Run Dashboard" order="2" sideWeight="0.49717057" weight="0.5339967" />
+      <window_info anchor="bottom" id="Run Dashboard" order="2" sideWeight="0.49717057" weight="0.40630183" />
       <window_info anchor="bottom" id="Find" order="3" />
       <window_info anchor="bottom" id="Run" order="4" sideWeight="0.497979" weight="0.30016583" />
       <window_info anchor="bottom" id="Debug" order="5" weight="0.4" />
@@ -545,48 +544,6 @@
     </expressions>
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://F:/jdk/jdk1.8202/jdk/src.zip!/java/io/ByteArrayOutputStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="72" selection-start-line="72" selection-end-line="72" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/springframework/spring-web/5.1.10.RELEASE/spring-web-5.1.10.RELEASE.jar!/org/springframework/http/client/AbstractBufferingClientHttpRequest.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="117">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/netflix/ribbon/ribbon-loadbalancer/2.3.0/ribbon-loadbalancer-2.3.0.jar!/com/netflix/loadbalancer/AbstractLoadBalancerRule.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="98">
-          <caret line="9" column="31" selection-start-line="9" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/netflix/ribbon/ribbon-loadbalancer/2.3.0/ribbon-loadbalancer-2.3.0.jar!/com/netflix/loadbalancer/AvailabilityFilteringRule.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="98">
-          <caret line="13" column="25" selection-start-line="13" selection-end-line="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/netflix/ribbon/ribbon-loadbalancer/2.3.0/ribbon-loadbalancer-2.3.0.jar!/com/netflix/loadbalancer/BestAvailableRule.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="98">
-          <caret line="10" column="20" selection-start-line="10" selection-end-line="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/netflix/ribbon/ribbon-loadbalancer/2.3.0/ribbon-loadbalancer-2.3.0.jar!/com/netflix/loadbalancer/ClientConfigEnabledRoundRobinRule.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="98">
-          <caret line="9" column="15" lean-forward="true" selection-start-line="9" selection-end-line="10" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/netflix/ribbon/ribbon-loadbalancer/2.3.0/ribbon-loadbalancer-2.3.0.jar!/com/netflix/loadbalancer/PredicateBasedRule.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="98">
@@ -780,20 +737,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="278">
-          <caret line="88" selection-start-line="88" selection-end-line="89" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="80" selection-start-line="80" selection-end-line="81" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/netflix/hystrix/hystrix-javanica/1.5.18/hystrix-javanica-1.5.18.jar!/com/netflix/hystrix/contrib/javanica/annotation/HystrixCommand.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="192">
@@ -812,16 +755,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="113">
           <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/java/com/bjpowernode/springcloud/GoodsApplication9100.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -854,18 +787,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-portal/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="774" column="7" selection-start-line="774" selection-start-column="7" selection-end-line="774" selection-end-column="7" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#54111#54112#0" expanded="true" />
-            <element signature="e#54159#54160#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../34-springcloud-service-commons/src/main/java/com/bjpowernode/springcloud/service/GoodsRemoteClientFallBackFactory.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="224">
@@ -883,13 +804,6 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="235">
-          <caret line="33" column="42" selection-start-line="33" selection-start-column="42" selection-end-line="33" selection-end-column="42" />
         </state>
       </provider>
     </entry>
@@ -917,13 +831,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/resources/application.properties">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="26" selection-start-column="26" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/java/com/bjpowernode/springcloud/DashboardApplication.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -931,10 +838,100 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-turbine/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="273">
+          <caret line="54" column="51" lean-forward="true" selection-start-line="54" selection-start-column="51" selection-end-line="54" selection-end-column="51" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="121">
+          <caret line="39" column="57" selection-start-line="39" selection-start-column="57" selection-end-line="39" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="297">
+          <caret line="89" selection-start-line="89" selection-end-line="90" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/../34-springcloud-service-portal/src/main/resources/application.properties">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="91">
-          <caret line="39" column="6" lean-forward="true" selection-start-line="39" selection-start-column="6" selection-end-line="39" selection-end-column="6" />
+        <state relative-caret-position="262">
+          <caret line="96" selection-start-line="96" selection-end-line="96" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-eureka/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-425" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-dashboard/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="26" selection-start-column="26" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-goods-9100/src/main/java/com/bjpowernode/springcloud/GoodsApplication9100.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/java/com/bjpowernode/springcloud/PortalApplication2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="77">
+          <caret line="72" column="13" selection-start-line="72" selection-start-column="13" selection-end-line="72" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-turbine/src/main/java/com/bjpowernode/springcloud/TurbineApplication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="8" column="15" selection-start-line="8" selection-start-column="15" selection-end-line="8" selection-end-column="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-portal-2/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="15" lean-forward="true" selection-start-line="15" selection-end-line="15" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-goods-9200/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1216">
+          <caret line="79" column="58" lean-forward="true" selection-start-line="79" selection-start-column="58" selection-end-line="79" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-turbine/src/main/resources/application.properties">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="10" lean-forward="true" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../34-springcloud-service-portal/src/main/java/com/bjpowernode/springcloud/controller/GoodsController.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6790">
+          <caret line="614" column="65" selection-start-line="614" selection-start-column="65" selection-end-line="614" selection-end-column="65" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#54111#54112#0" expanded="true" />
+            <element signature="e#54159#54160#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

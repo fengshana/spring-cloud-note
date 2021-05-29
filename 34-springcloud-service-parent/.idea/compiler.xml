@@ -12,6 +12,8 @@
         <module name="34-springcloud-service-goods-9100" />
         <module name="34-springcloud-service-goods-9200" />
         <module name="34-springcloud-service-portal" />
+        <module name="34-springcloud-service-portal-2" />
+        <module name="34-springcloud-service-turbine" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -29,6 +31,8 @@
       <module name="34-springcloud-service-goods-9200" options="-parameters" />
       <module name="34-springcloud-service-parent" options="-parameters" />
       <module name="34-springcloud-service-portal" options="-parameters" />
+      <module name="34-springcloud-service-portal-2" options="-parameters" />
+      <module name="34-springcloud-service-turbine" options="-parameters" />
     </option>
   </component>
 </project>

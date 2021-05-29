@@ -33,6 +33,12 @@
 
         <!--将hystrix dashboard服务添加进来，即服务监控-->
         <module>../34-springcloud-service-dashboard</module>
+
+        <!--turbine服务添加进来，实现hystrix dashboard仪表盘可以监控多个使用了hystrix的服务-->
+        <module>../34-springcloud-service-turbine</module>
+
+        <!--由于turbine服务需要对两个hystrix服务做测试，所以此时除了portal服务还需要再有一个服务于是创建了portal-2-->
+        <module>../34-springcloud-service-portal-2</module>
     </modules>
 
 

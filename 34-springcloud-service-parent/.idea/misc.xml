@@ -14,6 +14,8 @@
         <option value="$PROJECT_DIR$/../34-springcloud-service-eureka/pom.xml" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-goods-9200/pom.xml" />
         <option value="$PROJECT_DIR$/../34-springcloud-service-dashboard/pom.xml" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-turbine/pom.xml" />
+        <option value="$PROJECT_DIR$/../34-springcloud-service-portal-2/pom.xml" />
       </list>
     </option>
   </component>
